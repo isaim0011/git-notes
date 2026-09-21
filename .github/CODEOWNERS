@@ -1,0 +1,28 @@
+# Maintainers and code owners for git-notes
+
+# Global fallback — all PRs get reviewed by the core team
+*                   @isaim0011
+
+# Rust core engine
+/crates/gn-core/    @isaim0011
+/crates/gn-sync/    @isaim0011
+
+# CLI and TUI
+/crates/gn-cli/     @isaim0011
+/crates/gn-tui/     @isaim0011
+
+# TypeScript packages
+/packages/          @isaim0011
+
+# Go service
+/services/          @isaim0011
+
+# Python hooks
+/python/            @isaim0011
+
+# CI/CD — all workflow changes need maintainer review
+/.github/workflows/ @isaim0011
+
+# Documentation
+/docs/              @isaim0011
+/README.md          @isaim0011

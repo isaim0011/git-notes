@@ -2,9 +2,11 @@
 
 > **Decentralized code comments — history-safe, namespace-scoped, sync anywhere.**
 
-[![CI](https://github.com/git-notes/git-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/git-notes/git-notes/actions)
-[![Crates.io](https://img.shields.io/crates/v/git-notes-cli)](https://crates.io/crates/git-notes-cli)
-[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#license)
+[![CI](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](./LICENSE-MIT)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange?logo=rust)](https://www.rust-lang.org)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/isaim0011/git-notes/blob/main/.github/pull_request_template.md)
+[![GitHub Stars](https://img.shields.io/github/stars/isaim0011/git-notes?style=social)](https://github.com/isaim0011/git-notes/stargazers)
 
 `git-notes` is a polyglot open-source platform that brings persistent, decentralized code comments to **every surface** — without ever touching your commit history.
 
