@@ -1,0 +1,21 @@
+[package]
+name        = "gn-tui"
+description = "git-notes TUI — browse code hunks and comment threads"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "git-notes-tui"
+path = "src/main.rs"
+
+[dependencies]
+gn-core      = { path = "../gn-core" }
+ratatui      = { workspace = true }
+crossterm    = { workspace = true }
+syntect      = { workspace = true }
+chrono       = { workspace = true }
+anyhow       = { workspace = true }
+tracing      = { workspace = true }
+tracing-subscriber = { workspace = true }

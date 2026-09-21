@@ -1,0 +1,19 @@
+name: git-notes Sync
+description: Sync git-notes to/from GitHub PR review comments
+inputs:
+  github-token:
+    description: GitHub token
+    required: true
+  repo:
+    description: owner/repo
+    required: true
+  pr-number:
+    description: PR number
+    required: true
+  mode:
+    description: to-github | from-github | bidirectional
+    required: false
+    default: bidirectional
+runs:
+  using: docker
+  image: Dockerfile

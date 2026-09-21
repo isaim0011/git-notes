@@ -1,0 +1,23 @@
+[package]
+name        = "gn-cli"
+description = "git-notes CLI — add, list, show, sync, resolve notes"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "git-notes"
+path = "src/main.rs"
+
+[dependencies]
+gn-core     = { path = "../gn-core" }
+gn-sync     = { path = "../gn-sync" }
+clap        = { workspace = true, features = ["derive"] }
+clap_complete = { workspace = true }
+chrono      = { workspace = true }
+tracing     = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow      = { workspace = true }
+serde_json  = { workspace = true }
+uuid        = { workspace = true }

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "git-notes-hooks"
+version = "0.1.0"
+description = "Auto-install git hooks that sync refs/notes/* on push/pull"
+license = { text = "MIT OR Apache-2.0" }
+requires-python = ">=3.11"
+dependencies = ["click>=8.1", "rich>=13.0"]
+
+[project.scripts]
+git-notes-hooks = "gn_hooks.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-mock", "ruff"]
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["gn_hooks*"]

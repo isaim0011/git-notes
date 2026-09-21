@@ -1,0 +1,22 @@
+{
+  "name": "git-notes",
+  "version": "0.1.0",
+  "description": "Decentralized code comments — history-safe, namespace-scoped, sync anywhere",
+  "private": true,
+  "workspaces": [
+    "packages/vscode-ext",
+    "packages/chrome-ext",
+    "packages/web-viewer"
+  ],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "dev": "bun run --filter '*' dev",
+    "lint": "bun run --filter '*' lint",
+    "test": "bun run --filter '*' test",
+    "typecheck": "bun run --filter '*' typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

@@ -1,0 +1,58 @@
+# Rust
+/target/
+Cargo.lock
+
+# Node / Bun
+node_modules/
+dist/
+*.tsbuildinfo
+bun.lockb
+
+# Go
+*.exe
+*.test
+/services/github-bridge/github-bridge
+/services/github-bridge/github-bridge.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+*.vsix
+
+# Chrome Extension
+packages/chrome-ext/dist/
+
+# Web Viewer
+packages/web-viewer/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+
+# Test artifacts
+coverage/
+*.lcov
+lcov.info
+
+# Environment
+.env
+.env.local
+*.key
+
+# git-notes own notes (local)
+.git/notes/

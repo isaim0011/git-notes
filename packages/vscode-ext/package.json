@@ -1,0 +1,44 @@
+{
+  "name": "vscode-git-notes",
+  "displayName": "git-notes",
+  "description": "Decentralized code comments — inline gutter annotations from git notes",
+  "version": "0.1.0",
+  "publisher": "git-notes",
+  "license": "MIT",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Other"],
+  "keywords": ["git", "notes", "review", "comments", "decentralized"],
+  "activationEvents": ["workspaceContains:.git"],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "bun build src/extension.ts --outdir dist --target node --external vscode",
+    "typecheck": "tsc --noEmit",
+    "test": "echo no tests yet"
+  },
+  "contributes": {
+    "commands": [
+      { "command": "git-notes.add", "title": "git-notes: Add Note" },
+      { "command": "git-notes.list", "title": "git-notes: List Notes" },
+      { "command": "git-notes.sync", "title": "git-notes: Sync Notes" },
+      { "command": "git-notes.showPanel", "title": "git-notes: Show Note Thread" }
+    ],
+    "menus": {
+      "editor/context": [
+        { "command": "git-notes.add", "group": "git-notes" },
+        { "command": "git-notes.showPanel", "group": "git-notes" }
+      ]
+    },
+    "configuration": {
+      "title": "git-notes",
+      "properties": {
+        "git-notes.binaryPath": { "type": "string", "default": "git-notes", "description": "Path to the git-notes CLI binary" },
+        "git-notes.autoSync": { "type": "boolean", "default": false, "description": "Auto-sync notes on save" },
+        "git-notes.defaultNamespace": { "type": "string", "default": "comments", "enum": ["comments", "review", "todos"] }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,17 @@
+[package]
+name = "gn-sync"
+description = "git-notes sync layer — push/pull refs/notes/*, merge strategies, git hook installer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+gn-core      = { path = "../gn-core" }
+tokio        = { workspace = true }
+tracing      = { workspace = true }
+thiserror    = { workspace = true }
+anyhow       = { workspace = true }
+serde        = { workspace = true }
+serde_json   = { workspace = true }
+chrono       = { workspace = true }
