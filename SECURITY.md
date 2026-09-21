@@ -10,12 +10,11 @@
 
 **Please do NOT open a public GitHub issue for security vulnerabilities.**
 
-Instead, report them privately via one of these channels:
+Instead, use **GitHub Private Vulnerability Reporting**:
 
-1. **GitHub Private Vulnerability Reporting** (preferred):
-   Go to [Security → Report a vulnerability](https://github.com/isaim0011/git-notes/security/advisories/new)
+👉 [Security → Report a vulnerability](https://github.com/isaim0011/git-notes/security/advisories/new)
 
-2. **Email**: security@git-notes.dev *(monitored)*
+This is fully private — only you and the maintainer can see it until it's resolved and disclosed.
 
 ### What to include
 

@@ -23,8 +23,9 @@ nationality, personal appearance, race, religion, or sexual identity.
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported to the maintainers at
-**conduct@git-notes.dev**. All complaints will be reviewed and investigated.
+Instances of unacceptable behavior may be reported by opening a private
+[GitHub Discussion](https://github.com/isaim0011/git-notes/discussions) or messaging
+[@isaim0011](https://github.com/isaim0011) directly on GitHub. All complaints will be reviewed and investigated.
 
 Maintainers who do not follow or enforce this Code of Conduct may face
 temporary or permanent repercussions as determined by other project leadership.
