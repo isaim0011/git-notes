@@ -3,7 +3,7 @@
   "displayName": "git-notes",
   "description": "Decentralized code comments — inline gutter annotations from git notes",
   "version": "0.1.0",
-  "publisher": "git-notes",
+  "publisher": "isaim0011",
   "license": "MIT",
   "repository": {
     "type": "git",
