@@ -1,0 +1,27 @@
+#pragma code_page(65001)
+1 VERSIONINFO
+FILEVERSION 0, 1, 0, 0
+PRODUCTVERSION 0, 1, 0, 0
+FILEOS 0x40004
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+BLOCK "040904b0"
+{
+VALUE "CompanyName", "Bimo"
+VALUE "FileDescription", "git-notes GitHub Bridge Daemon"
+VALUE "FileVersion", "0.1.0"
+VALUE "InternalName", "github-bridge"
+VALUE "LegalCopyright", "Copyright (C) 2026 Bimo"
+VALUE "OriginalFilename", "github-bridge.exe"
+VALUE "ProductName", "git-notes GitHub Bridge"
+VALUE "ProductVersion", "0.1.0"
+}
+}
+BLOCK "VarFileInfo"
+{
+VALUE "Translation", 0x0409, 0x04b0
+}
+}
+1 ICON "../../assets/icon.ico"

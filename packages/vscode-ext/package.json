@@ -4,6 +4,7 @@
   "description": "Decentralized code comments — inline gutter annotations from git notes",
   "version": "0.1.0",
   "publisher": "isaim0011",
+  "author": { "name": "Bimo", "email": "git-notes@open-source.dev" },
   "license": "MIT",
   "repository": {
     "type": "git",

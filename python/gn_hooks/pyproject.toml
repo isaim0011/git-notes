@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT OR Apache-2.0" }
 authors = [
-    { name = "isaim0011", email = "git-notes@open-source.dev" }
+    { name = "Bimo", email = "git-notes@open-source.dev" }
 ]
 keywords = ["git", "git-notes", "git-hooks", "code-review", "decentralized", "developer-tools"]
 classifiers = [
