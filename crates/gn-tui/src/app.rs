@@ -1,7 +1,7 @@
-use std::path::PathBuf;
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent};
-use gn_core::{NotesEngine, Note};
+use gn_core::{Note, NotesEngine};
+use std::path::PathBuf;
 
 pub enum AppMode {
     FileTree,
@@ -40,7 +40,7 @@ impl App {
 
     pub fn load_notes(&mut self) -> Result<()> {
         let engine = NotesEngine::new(&self.repo_path);
-        
+
         // This is a naive load, assuming we merge all namespaces
         let mut all_notes = Vec::new();
         for ns in &["comments", "review", "todos"] {
@@ -49,24 +49,28 @@ impl App {
                 all_notes.extend(notes);
             }
         }
-        
+
         // Group by file
-        let mut file_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        let mut file_counts: std::collections::HashMap<String, usize> =
+            std::collections::HashMap::new();
         for note in &all_notes {
             if let Some(file) = &note.file {
                 *file_counts.entry(file.clone()).or_insert(0) += 1;
             }
         }
-        
-        self.file_tree = file_counts.into_iter().map(|(path, note_count)| FileEntry { path, note_count }).collect();
+
+        self.file_tree = file_counts
+            .into_iter()
+            .map(|(path, note_count)| FileEntry { path, note_count })
+            .collect();
         self.file_tree.sort_by(|a, b| a.path.cmp(&b.path));
-        
+
         if !self.file_tree.is_empty() {
             self.selected_file = Some(0);
         }
-        
+
         self.notes = all_notes;
-        
+
         Ok(())
     }
 
@@ -145,7 +149,7 @@ impl App {
                     self.input_buffer.pop();
                 }
                 _ => {}
-            }
+            },
         }
         true
     }
@@ -153,11 +157,16 @@ impl App {
     pub fn tick(&mut self) {
         // Handle tick events
     }
-    
+
     pub fn current_file_notes(&self) -> Vec<Note> {
         if let Some(idx) = self.selected_file {
             if let Some(entry) = self.file_tree.get(idx) {
-                return self.notes.iter().filter(|n| n.file.as_deref() == Some(entry.path.as_str())).cloned().collect();
+                return self
+                    .notes
+                    .iter()
+                    .filter(|n| n.file.as_deref() == Some(entry.path.as_str()))
+                    .cloned()
+                    .collect();
             }
         }
         Vec::new()

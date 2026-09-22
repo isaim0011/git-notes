@@ -1,7 +1,7 @@
+use anyhow::Result;
 use clap::{Args, CommandFactory};
 use clap_complete::{generate, Shell};
 use std::io;
-use anyhow::Result;
 
 #[derive(Args)]
 pub struct CompletionsArgs {

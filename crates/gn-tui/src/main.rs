@@ -43,7 +43,7 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result
 
 fn run_app(terminal: &mut Terminal<CrosstermBackend<Stdout>>, app: &mut app::App) -> Result<()> {
     let events = events::EventHandler::new(250);
-    
+
     app.load_notes()?;
 
     loop {
@@ -61,6 +61,6 @@ fn run_app(terminal: &mut Terminal<CrosstermBackend<Stdout>>, app: &mut app::App
             events::Event::Resize(_, _) => {}
         }
     }
-    
+
     Ok(())
 }

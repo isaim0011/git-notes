@@ -39,16 +39,16 @@ git-notes sync push
 
 pub fn uninstall_hooks(repo_path: &Path) -> Result<()> {
     let hooks_dir = repo_path.join(".git").join("hooks");
-    
+
     let post_merge_path = hooks_dir.join("post-merge");
     if post_merge_path.exists() {
         fs::remove_file(post_merge_path)?;
     }
-    
+
     let pre_push_path = hooks_dir.join("pre-push");
     if pre_push_path.exists() {
         fs::remove_file(pre_push_path)?;
     }
-    
+
     Ok(())
 }

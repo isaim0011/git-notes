@@ -1,6 +1,6 @@
+use anyhow::Result;
 use clap::Args;
 use gn_core::NotesEngine;
-use anyhow::Result;
 
 #[derive(Args)]
 pub struct ListArgs {
@@ -33,7 +33,11 @@ pub fn run(args: &ListArgs) -> Result<()> {
     let engine = NotesEngine::new(".");
     let namespaces = match &args.namespace {
         Some(ns) => vec![ns.clone()],
-        None => vec!["comments".to_string(), "review".to_string(), "todos".to_string()],
+        None => vec![
+            "comments".to_string(),
+            "review".to_string(),
+            "todos".to_string(),
+        ],
     };
 
     let mut all_notes = Vec::new();
@@ -62,7 +66,10 @@ pub fn run(args: &ListArgs) -> Result<()> {
         let json = serde_json::to_string_pretty(&all_notes)?;
         println!("{}", json);
     } else {
-        println!("{:<10} | {:<20} | {:<20} | {:<25} | {:<10} | {}", "ID", "FILE:LINE", "AUTHOR", "DATE", "STATUS", "BODY");
+        println!(
+            "{:<10} | {:<20} | {:<20} | {:<25} | {:<10} | {}",
+            "ID", "FILE:LINE", "AUTHOR", "DATE", "STATUS", "BODY"
+        );
         for note in all_notes {
             let id_short = note.id.to_string().chars().take(8).collect::<String>();
             let file = note.file.clone().unwrap_or_else(|| "".to_string());
@@ -73,7 +80,10 @@ pub fn run(args: &ListArgs) -> Result<()> {
             } else {
                 note.body.clone()
             };
-            println!("{:<10} | {:<20} | {:<20} | {:<25} | {:<10?} | {}", id_short, file_line, note.author, note.timestamp, note.status, body_short);
+            println!(
+                "{:<10} | {:<20} | {:<20} | {:<25} | {:<10?} | {}",
+                id_short, file_line, note.author, note.timestamp, note.status, body_short
+            );
         }
     }
 

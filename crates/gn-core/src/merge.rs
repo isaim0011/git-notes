@@ -11,7 +11,7 @@ pub struct UnionStrategy;
 impl MergeStrategy for UnionStrategy {
     fn merge(&self, local: &[Note], remote: &[Note]) -> Vec<Note> {
         let mut notes_map = HashMap::new();
-        
+
         for note in local {
             notes_map.insert(note.id, note.clone());
         }

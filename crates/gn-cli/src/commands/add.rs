@@ -1,7 +1,7 @@
-use clap::Args;
-use gn_core::{NotesEngine, Note};
-use std::process::Command;
 use anyhow::{Context, Result};
+use clap::Args;
+use gn_core::{Note, NotesEngine};
+use std::process::Command;
 
 #[derive(Args)]
 pub struct AddArgs {
@@ -27,17 +27,28 @@ pub struct AddArgs {
 }
 
 pub fn run(args: &AddArgs) -> Result<()> {
-    let name_output = Command::new("git").args(["config", "user.name"]).output().context("Failed to read user.name")?;
-    let email_output = Command::new("git").args(["config", "user.email"]).output().context("Failed to read user.email")?;
-    
+    let name_output = Command::new("git")
+        .args(["config", "user.name"])
+        .output()
+        .context("Failed to read user.name")?;
+    let email_output = Command::new("git")
+        .args(["config", "user.email"])
+        .output()
+        .context("Failed to read user.email")?;
+
     let author = format!(
         "{} <{}>",
         String::from_utf8_lossy(&name_output.stdout).trim(),
         String::from_utf8_lossy(&email_output.stdout).trim()
     );
 
-    let head_output = Command::new("git").args(["rev-parse", "HEAD"]).output().context("Failed to get HEAD commit")?;
-    let commit = String::from_utf8_lossy(&head_output.stdout).trim().to_string();
+    let head_output = Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .context("Failed to get HEAD commit")?;
+    let commit = String::from_utf8_lossy(&head_output.stdout)
+        .trim()
+        .to_string();
 
     let mut line_start = None;
     let mut line_end = None;
@@ -76,6 +87,6 @@ pub fn run(args: &AddArgs) -> Result<()> {
     engine.write_note(&note)?;
 
     println!("✓ Note {} added to refs/notes/{}", note.id, args.namespace);
-    
+
     Ok(())
 }

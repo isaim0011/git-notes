@@ -6,14 +6,14 @@ use tempfile::TempDir;
 fn test_engine_write_and_read() {
     let temp_dir = TempDir::new().unwrap();
     let repo_path = temp_dir.path();
-    
+
     // Init git repo
     Command::new("git")
         .args(["init"])
         .current_dir(repo_path)
         .status()
         .unwrap();
-        
+
     // Config git to allow commits
     Command::new("git")
         .args(["config", "user.email", "test@test.com"])

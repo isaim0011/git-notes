@@ -1,7 +1,7 @@
+use crate::namespace::Namespace;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::namespace::Namespace;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum NoteStatus {
@@ -18,8 +18,8 @@ pub struct Note {
     pub file: Option<String>, // relative file path
     pub line_start: Option<u32>,
     pub line_end: Option<u32>,
-    pub body: String,         // markdown body
-    pub author: String,       // "Name <email>"
+    pub body: String,   // markdown body
+    pub author: String, // "Name <email>"
     pub timestamp: DateTime<Utc>,
     pub namespace: Namespace,
     pub thread_id: Option<Uuid>, // for replies — parent note id
