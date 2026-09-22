@@ -12,15 +12,9 @@
 
 `git-notes` is a polyglot open-source platform that brings persistent, decentralized code comments to **every surface** — without ever touching your commit history.
 
-```
-┌──────────────┬───────────────────────────┬────────────────────┐
-│ File Tree    │  Diff Hunk                │  Comments          │
-│              │  ● line 42 [2 comments]   │  > Alice: why O²?  │
-│ src/         │   fn process(items) {     │  > Bob: fixed in   │
-│   main.rs●   │ > let mut map = ...       │    next commit     │
-│   lib.rs     │                           │  [Reply] [Resolve] │
-└──────────────┴───────────────────────────┴────────────────────┘
-```
+<p align="center">
+  <img src="./assets/demo.svg" alt="git-notes Terminal Demo" width="100%" />
+</p>
 
 ---
 
