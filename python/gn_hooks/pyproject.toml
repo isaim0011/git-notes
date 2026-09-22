@@ -4,17 +4,50 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "git-notes-hooks"
-version = "0.1.0"
-description = "Auto-install git hooks that sync refs/notes/* on push/pull"
-license = { text = "MIT OR Apache-2.0" }
+version = "0.1.1"
+description = "Automatic Git hooks to keep refs/notes/* synchronized across all remotes on push and pull"
+readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["click>=8.1", "rich>=13.0"]
+license = { text = "MIT OR Apache-2.0" }
+authors = [
+    { name = "isaim0011", email = "git-notes@open-source.dev" }
+]
+keywords = ["git", "git-notes", "git-hooks", "code-review", "decentralized", "developer-tools"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/isaim0011/git-notes"
+Repository = "https://github.com/isaim0011/git-notes"
+Issues = "https://github.com/isaim0011/git-notes/issues"
+Documentation = "https://github.com/isaim0011/git-notes#readme"
+Changelog = "https://github.com/isaim0011/git-notes/blob/main/docs/CHANGELOG.md"
 
 [project.scripts]
 git-notes-hooks = "gn_hooks.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-mock", "ruff"]
+dev = [
+    "pytest>=8",
+    "pytest-mock",
+    "ruff",
+]
 
 [tool.setuptools.packages.find]
 where = [".."]

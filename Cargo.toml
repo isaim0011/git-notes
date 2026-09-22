@@ -5,9 +5,13 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["Git Notes Contributors"]
-license = "MIT"
-repository = "https://github.com/git-notes/git-notes"
+authors = ["isaim0011 <git-notes@open-source.dev>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/isaim0011/git-notes"
+homepage = "https://github.com/isaim0011/git-notes"
+documentation = "https://docs.rs/gn-core"
+keywords = ["git", "notes", "code-review", "comments", "decentralized"]
+categories = ["command-line-utilities", "development-tools"]
 
 [workspace.dependencies]
 gix = "0.66"
