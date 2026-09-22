@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "publisher": "git-notes",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isaim0011/git-notes"
+  },
   "engines": { "vscode": "^1.90.0" },
   "categories": ["Other"],
   "keywords": ["git", "notes", "review", "comments", "decentralized"],

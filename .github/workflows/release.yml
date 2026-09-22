@@ -76,7 +76,9 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install
         working-directory: packages/vscode-ext
-      - run: bunx @vscode/vsce package --no-dependencies
+      - run: bun run build
+        working-directory: packages/vscode-ext
+      - run: bunx @vscode/vsce package --no-dependencies --allow-missing-repository
         working-directory: packages/vscode-ext
       - uses: actions/upload-artifact@v4
         with:

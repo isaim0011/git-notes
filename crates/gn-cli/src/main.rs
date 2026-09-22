@@ -15,6 +15,8 @@ struct Cli {
 enum Commands {
     /// Add a new note
     Add(commands::add::AddArgs),
+    /// Reply to an existing note thread
+    Reply(commands::reply::ReplyArgs),
     /// List notes
     List(commands::list::ListArgs),
     /// Show a specific note
@@ -38,6 +40,7 @@ fn main() -> anyhow::Result<()> {
 
     match &cli.command {
         Commands::Add(args) => commands::add::run(args),
+        Commands::Reply(args) => commands::reply::run(args),
         Commands::List(args) => commands::list::run(args),
         Commands::Show(args) => commands::show::run(args),
         Commands::Sync(args) => commands::sync::run(args),
