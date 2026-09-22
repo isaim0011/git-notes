@@ -7,11 +7,12 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
+readme = "README.md"
 keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-gn-core      = { path = "../gn-core" }
+gn-core      = { version = "0.1.0", path = "../gn-core" }
 tokio        = { workspace = true }
 tracing      = { workspace = true }
 thiserror    = { workspace = true }

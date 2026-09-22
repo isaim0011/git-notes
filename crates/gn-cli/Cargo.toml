@@ -16,8 +16,8 @@ name = "git-notes"
 path = "src/main.rs"
 
 [dependencies]
-gn-core     = { path = "../gn-core" }
-gn-sync     = { path = "../gn-sync" }
+gn-core     = { version = "0.1.0", path = "../gn-core" }
+gn-sync     = { version = "0.1.0", path = "../gn-sync" }
 clap        = { workspace = true, features = ["derive"] }
 clap_complete = { workspace = true }
 chrono      = { workspace = true }
