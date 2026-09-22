@@ -13,7 +13,7 @@
 `git-notes` is a polyglot open-source platform that brings persistent, decentralized code comments to **every surface** — without ever touching your commit history.
 
 <p align="center">
-  <img src="./assets/demo.svg" alt="git-notes Terminal Demo" width="100%" />
+  <img src="https://raw.githubusercontent.com/isaim0011/git-notes/main/assets/demo.gif" alt="git-notes Terminal Demo" width="100%" />
 </p>
 
 ---
@@ -34,36 +34,51 @@
 
 ## Installation
 
-### ⚡ Quick Install (Prebuilt Binaries)
+### ⚡ One-Line Quick Install
 
-Download standalone binaries directly from [GitHub Releases v0.1.0](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0):
-
-| Platform | Binary | One-line Command |
-|---|---|---|
-| **Windows** | [`git-notes.exe`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe) | `Invoke-WebRequest -Uri "https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe" -OutFile git-notes.exe` |
-| **Linux (x86_64)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64 -o git-notes && chmod +x git-notes` |
-| **macOS (Apple Silicon)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64 -o git-notes && chmod +x git-notes` |
-| **macOS (Intel)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64 -o git-notes && chmod +x git-notes` |
-
-### Build from Source (Rust)
+**Linux / macOS:**
 ```bash
-git clone https://github.com/isaim0011/git-notes.git
-cd git-notes
-cargo build --release
+curl -fsSL https://raw.githubusercontent.com/isaim0011/git-notes/main/install.sh | sh
 ```
 
-### VS Code Extension
-Download from [Releases](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0) or run `bun run build` in `packages/vscode-ext`.
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/isaim0011/git-notes/main/install.ps1 | iex
+```
 
-### Chrome Extension
-Download [`git-notes-chrome.zip`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-chrome.zip) from Releases and load unpacked into Chrome (`chrome://extensions`).
+### 📦 Package Managers
 
-### Python Hooks (auto-sync on push/pull)
+**Rust (via crates.io):**
 ```bash
-cd python/gn_hooks
-pip install -e .
+cargo install gn-cli --bin git-notes
+cargo install gn-tui --bin git-notes-tui
+```
+
+**Python Git Hooks (via PyPI):**
+```bash
+pip install git-notes-hooks
 git-notes-hooks install
 ```
+
+**VS Code & Cursor IDE:**
+Install directly from the Extensions tab or via [Open VSX](https://open-vsx.org/extension/isaim0011/vscode-git-notes):
+```bash
+code --install-extension isaim0011.vscode-git-notes
+```
+
+**Chrome Extension:**
+Download [`git-notes-chrome.zip`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-chrome.zip) from Releases and load unpacked into Chrome (`chrome://extensions`).
+
+### 📦 Standalone Binaries
+
+Prebuilt standalone binaries are available from [GitHub Releases v0.1.0](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0):
+
+| Platform | Binary | Direct Download |
+|---|---|---|
+| **Windows (x86_64)** | `git-notes.exe` | [Download .exe](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe) |
+| **Linux (x86_64)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64) |
+| **macOS (Apple Silicon)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64) |
+| **macOS (Intel)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64) |
 
 ---
 
@@ -159,7 +174,7 @@ This project uses:
 - **Python** 3.11+ for hooks
 
 ```bash
-git clone https://github.com/git-notes/git-notes
+git clone https://github.com/isaim0011/git-notes.git
 cd git-notes
 
 # Rust
