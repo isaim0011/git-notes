@@ -3,6 +3,7 @@
 > **Decentralized code comments — history-safe, namespace-scoped, sync anywhere.**
 
 [![CI](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/isaim0011/git-notes?color=brightgreen)](https://github.com/isaim0011/git-notes/releases)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](./LICENSE-MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange?logo=rust)](https://www.rust-lang.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/isaim0011/git-notes/blob/main/.github/pull_request_template.md)
@@ -30,6 +31,7 @@
 | 🔒 **Zero history rewrite** | Notes live in `refs/notes/*`, never in commits |
 | 🌐 **Works everywhere** | CLI · TUI · VS Code · Chrome · Web · CI |
 | 📦 **Offline-first** | Notes live in the repo — no server needed |
+| 💬 **Threaded replies** | Reply directly to existing notes in-tree |
 | 🔀 **Smart merge** | Union + LWW strategy on sync conflicts |
 | 🔌 **Pluggable** | Add namespaces, merge strategies, surfaces |
 | 🐙 **GitHub Bridge** | Sync notes ↔ PR review comments |
@@ -38,22 +40,34 @@
 
 ## Installation
 
-### CLI + TUI (Rust)
+### ⚡ Quick Install (Prebuilt Binaries)
+
+Download standalone binaries directly from [GitHub Releases v0.1.0](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0):
+
+| Platform | Binary | One-line Command |
+|---|---|---|
+| **Windows** | [`git-notes.exe`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe) | `Invoke-WebRequest -Uri "https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe" -OutFile git-notes.exe` |
+| **Linux (x86_64)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64 -o git-notes && chmod +x git-notes` |
+| **macOS (Apple Silicon)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64 -o git-notes && chmod +x git-notes` |
+| **macOS (Intel)** | [`git-notes`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64) | `curl -L https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64 -o git-notes && chmod +x git-notes` |
+
+### Build from Source (Rust)
 ```bash
-cargo install git-notes-cli git-notes-tui
+git clone https://github.com/isaim0011/git-notes.git
+cd git-notes
+cargo build --release
 ```
 
 ### VS Code Extension
-```
-ext install git-notes.vscode-git-notes
-```
+Download from [Releases](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0) or run `bun run build` in `packages/vscode-ext`.
 
 ### Chrome Extension
-Download from Chrome Web Store or load `packages/chrome-ext/dist` unpacked.
+Download [`git-notes-chrome.zip`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-chrome.zip) from Releases and load unpacked into Chrome (`chrome://extensions`).
 
-### Python hooks (auto-sync on push/pull)
+### Python Hooks (auto-sync on push/pull)
 ```bash
-pip install git-notes-hooks
+cd python/gn_hooks
+pip install -e .
 git-notes-hooks install
 ```
 
@@ -65,11 +79,14 @@ git-notes-hooks install
 # Add a comment on line 42 of main.rs
 git-notes add -f src/main.rs -l 42 -m "Why is this O(n²)?"
 
+# Reply to an existing note thread
+git-notes reply a1b2c3 -m "Fixed in commit abc123!"
+
+# Show a specific note and its full reply thread
+git-notes show a1b2c3 --thread
+
 # List all review notes
 git-notes list --namespace review
-
-# Show a specific note
-git-notes show a1b2c3
 
 # Sync to remote
 git-notes sync push
