@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Chrome extension — render git-notes inline in GitHub PR diffs",
   "scripts": {
-    "build": "bun build src/content.ts --outfile dist/content.js --target browser && bun build src/background.ts --outfile dist/background.js --target browser && bun build src/popup/popup.ts --outfile dist/popup.js --target browser && cp src/popup/popup.html dist/ && cp manifest.json dist/",
+    "build": "bun build src/content.ts --outfile dist/content.js --target browser && bun build src/background.ts --outfile dist/background.js --target browser && bun build src/popup/popup.ts --outfile dist/popup.js --target browser && cp src/popup/popup.html dist/ && cp manifest.json dist/ && cp icon*.png dist/",
     "dev": "bun run build --watch",
     "typecheck": "tsc --noEmit"
   },
