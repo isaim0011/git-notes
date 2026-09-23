@@ -29,6 +29,8 @@ enum Commands {
     Export(commands::export::ExportArgs),
     /// Generate shell completions
     Completions(commands::completions::CompletionsArgs),
+    /// Run diagnostic checks on the git-notes environment
+    Doctor(commands::doctor::DoctorArgs),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -47,5 +49,6 @@ fn main() -> anyhow::Result<()> {
         Commands::Resolve(args) => commands::resolve::run(args),
         Commands::Export(args) => commands::export::run(args),
         Commands::Completions(args) => commands::completions::run(args),
+        Commands::Doctor(args) => commands::doctor::run(args),
     }
 }

@@ -1,5 +1,6 @@
 pub mod add;
 pub mod completions;
+pub mod doctor;
 pub mod export;
 pub mod list;
 pub mod reply;
