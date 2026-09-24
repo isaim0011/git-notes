@@ -2,7 +2,7 @@
   "name": "vscode-git-notes",
   "displayName": "git-notes",
   "description": "Decentralized code comments, review discussions, and GitHub notes inline inside VS Code, Cursor, and Windsurf IDEs",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "isaim0011",
   "icon": "icon.png",
   "author": { "name": "Bimo", "email": "i.s41m0011@gmail.com" },
@@ -44,6 +44,25 @@
       { "command": "git-notes.list", "title": "git-notes: List Notes" },
       { "command": "git-notes.sync", "title": "git-notes: Sync Notes" },
       { "command": "git-notes.showPanel", "title": "git-notes: Show Note Thread" }
+    ],
+    "keybindings": [
+      {
+        "command": "git-notes.add",
+        "key": "alt+n",
+        "mac": "cmd+alt+n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "git-notes.showPanel",
+        "key": "alt+shift+n",
+        "mac": "cmd+alt+shift+n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "git-notes.sync",
+        "key": "alt+s",
+        "mac": "cmd+alt+s"
+      }
     ],
     "menus": {
       "editor/context": [

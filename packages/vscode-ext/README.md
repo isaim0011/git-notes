@@ -51,12 +51,28 @@ cargo install gn-cli --bin git-notes
 
 ### 2. Adding a Note
 1. Open any file in your Git repository.
-2. Right-click on any line and select **`git-notes: Add Note`** (or press `Ctrl+Shift+P` / `Cmd+Shift+P` → type `git-notes: Add Note`).
+2. Select a line range and press `Alt+N` (Mac: `Cmd+Option+N`) or right-click and select **`git-notes: Add Note`**.
 3. Type your comment and press **Enter**. A note is created and anchored to that exact line and commit!
 
 ### 3. Viewing & Replying to Threads
-- Click any gutter annotation, or right-click and select **`git-notes: Show Note Thread`**.
+- Press `Alt+Shift+N` (Mac: `Cmd+Option+Shift+N`) or click any gutter annotation to open the **`git-notes: Show Note Thread`** panel.
+- Press `Alt+S` (Mac: `Cmd+Option+S`) to instantly sync notes with `refs/notes/*` on your remote.
 - The rich thread webview allows you to review the discussion, reply to teammates, or resolve issues.
+
+### 4. ⌨️ Default Keyboard Shortcuts
+| Keybinding (Win/Linux) | Keybinding (macOS) | Command |
+|---|---|---|
+| `Alt+N` | `Cmd+Alt+N` | `git-notes: Add Note` |
+| `Alt+Shift+N` | `Cmd+Alt+Shift+N` | `git-notes: Show Note Thread` |
+| `Alt+S` | `Cmd+Alt+S` | `git-notes: Sync Notes` |
+
+---
+
+### 5. CLI Quickies Integration
+Run quickies inside your integrated VS Code / Cursor terminal:
+- `gn a -f file.rs -l 10 -m "..."` (quickie add)
+- `gn l` (compact numbered table)
+- `gn shortcuts` (cheat sheet & custom binding configuration)
 
 ---
 

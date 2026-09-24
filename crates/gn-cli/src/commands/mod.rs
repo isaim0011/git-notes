@@ -12,6 +12,7 @@ pub mod list;
 pub mod picker;
 pub mod reply;
 pub mod resolve;
+pub mod shortcuts;
 pub mod show;
 pub mod summarize;
 pub mod sync;

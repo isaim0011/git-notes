@@ -75,30 +75,38 @@ cargo install gn-cli --bin git-notes
 ## Quick Start
 
 ```bash
-# 1. Add a note anchored to line 42 of an auth file
-git-notes add -f src/auth.rs -l 42 -m "Validate JWT expiry before decoding claims"
+# 1. Quickie add: anchor a comment to a line in 0.05s
+gn a -f src/auth.rs -l 42 -m "Validate JWT expiry before decoding claims"
 
-# 2. Check repo health (hooks, refs, stale notes)
-git-notes doctor
+# 2. Numbered index list with quick single-digit identifiers
+gn l
 
-# 3. Browse notes in the interactive TUI
+# 3. Quick reply or approve using note numbers [1], [2], [3]
+gn r 1 -m "Fixed in commit 8d31ef2"
+gn ok 1
+
+# 4. View and customize CLI quickies & keyboard shortcuts cheat sheet
+gn shortcuts
+gn shortcuts --set c="add -m"    # Bind custom user abbreviation
+
+# 5. Interactive arrow-key note thread picker
+gn s
+
+# 6. Check repo health (hooks, refs, stale notes)
+gn doc
+
+# 7. Browse notes in the interactive terminal UI (TUI)
 git-notes-tui
 
-# 4. See notes inline in git blame
-git-notes blame --file src/auth.rs
+# 8. See notes inline in git diff & git blame
+gn d
+gn b -f src/auth.rs
 
-# 5. Pull in a team's existing GitHub PR review comments instantly
-git-notes import-pr --pr 42
+# 9. Sync bidirectionally with remote origin
+gn push && gn pull
 
-# 6. Sync bidirectionally with origin
-git-notes sync push && git-notes sync pull
-
-# 7. Get an AI summary of all open threads before a release
-git-notes summarize --namespace review
-
-# 8. List, filter, resolve
-git-notes list --namespace review --status open
-git-notes resolve a1b2c3 --status approved
+# 10. Get an AI summary of open threads before a release (Gemini)
+gn sum --namespace review
 ```
 
 ---
@@ -135,6 +143,12 @@ Install [`isaim0011/git-notes`](https://github.com/marketplace/actions/git-notes
 
 ### 💬 Threaded Discussions
 Reply, approve, reject, resolve — full conversation trees anchored to specific lines.
+
+### ⚡ Quickies & Adaptive Learning
+Single-letter abbreviations (`gn a`, `gn l`, `gn r`, `gn ok`, `gn s`) and a behavioral learning engine that gets faster and smarter the more you use it.
+
+### ⌨️ Universal Keyboard Shortcuts
+Interactive TUI navigation, quick reply bars (`r`), approve (`ok`), and full CLI shortcut customization (`gn shortcuts --set`).
 
 </td>
 </tr>

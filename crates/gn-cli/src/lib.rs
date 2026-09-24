@@ -68,6 +68,10 @@ pub enum Commands {
     #[command(alias = "d")]
     Diff(commands::diff::DiffArgs),
 
+    /// View and customize quickies, CLI abbreviations, and keyboard shortcuts [aliases: shortcut, keys, quickies]
+    #[command(alias = "shortcut", alias = "keys", alias = "quickies")]
+    Shortcuts(commands::shortcuts::ShortcutsArgs),
+
     /// Generate shell completions
     Completions(commands::completions::CompletionsArgs),
 }
@@ -136,6 +140,10 @@ pub fn run_cli() -> anyhow::Result<()> {
         Commands::Diff(args) => {
             profile.record_interaction("diff", None, Some(&args.namespace));
             commands::diff::run(args)
+        }
+        Commands::Shortcuts(args) => {
+            profile.record_interaction("shortcuts", None, None);
+            commands::shortcuts::run(args)
         }
         Commands::Completions(args) => commands::completions::run(args),
     };

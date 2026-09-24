@@ -49,6 +49,29 @@ git-notes list --namespace review
 git-notes resolve 72818dac --status approved
 ```
 
+### Quickies & Single-Letter Abbreviations (`gn`)
+Save keystrokes with fast, ergonomic quickies:
+- `gn a -f file.rs -l 42 -m "..."` — Quickie add note
+- `gn l` — List notes with compact numbered index `[1]`, `[2]`
+- `gn r 1 -m "Fixed!"` — Reply directly using quick index number
+- `gn ok 1` — Resolve / approve note by number
+- `gn s` — Interactive terminal arrow-key thread picker
+- `gn d` — View git diff with inline notes
+- `gn b -f file.rs` — Blame with inline notes annotations
+- `gn doc` — Doctor health check & stale-note detector
+
+### View & Customize Shortcuts
+```bash
+# View all abbreviations and keybindings
+gn shortcuts
+
+# Customize your own aliases
+gn shortcuts --set c="add -m"
+
+# Reset to defaults
+gn shortcuts --reset
+```
+
 ### Export Notes
 ```bash
 git-notes export --format markdown   # outputs NOTES.md
