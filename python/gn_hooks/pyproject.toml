@@ -37,7 +37,7 @@ Homepage = "https://github.com/isaim0011/git-notes"
 Repository = "https://github.com/isaim0011/git-notes"
 Issues = "https://github.com/isaim0011/git-notes/issues"
 Documentation = "https://github.com/isaim0011/git-notes#readme"
-Changelog = "https://github.com/isaim0011/git-notes/blob/main/docs/CHANGELOG.md"
+Changelog = "https://github.com/isaim0011/git-notes/blob/main/CHANGELOG.md"
 
 [project.scripts]
 git-notes-hooks = "gn_hooks.cli:main"

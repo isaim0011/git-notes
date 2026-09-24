@@ -88,3 +88,4 @@ git-notes export --format html       # outputs index.html
 
 - **GitHub**: [https://github.com/isaim0011/git-notes](https://github.com/isaim0011/git-notes)
 - **Releases**: [https://github.com/isaim0011/git-notes/releases](https://github.com/isaim0011/git-notes/releases)
+- **Changelog**: [https://github.com/isaim0011/git-notes/blob/main/CHANGELOG.md](https://github.com/isaim0011/git-notes/blob/main/CHANGELOG.md)
