@@ -51,12 +51,10 @@ pub fn fetch_notes(
         if !remote_notes.is_empty() {
             let merged_notes = strategy.merge(&local_notes, &remote_notes);
 
-            // Re-write merged notes locally
+            // Re-write merged notes locally in batch
             // First we need to delete existing local ref or overwrite
             // An easy approach is writing all notes. The LWW strategy guarantees identical notes have same hash
-            for note in &merged_notes {
-                engine.write_note(note)?;
-            }
+            engine.write_notes(&merged_notes)?;
             total_merged += merged_notes.len();
         }
 
