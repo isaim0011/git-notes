@@ -59,6 +59,9 @@ Save keystrokes with fast, ergonomic quickies:
 - `gn d` — View git diff with inline notes
 - `gn b -f file.rs` — Blame with inline notes annotations
 - `gn doc` — Doctor health check & stale-note detector
+- `gn heal` — Auto-heal & re-anchor notes after git rebase / amend
+- `gn sync --p2p` — Spin up local Wi-Fi P2P sync server
+- `gn imp <gitlab|bitbucket|jira|pr>` — Import reviews from any platform
 
 ### View & Customize Shortcuts
 ```bash

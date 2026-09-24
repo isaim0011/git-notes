@@ -139,5 +139,11 @@ pub fn run() -> Result<()> {
         );
     }
 
+    println!("┌─────────────────────────────────────────────────────────────┐");
+    println!("│ \x1b[1;36m💬 Enjoying git-notes? Help us grow!\x1b[0m                        │");
+    println!("│ \x1b[33m⭐ Star on GitHub:\x1b[0m   https://github.com/isaim0011/git-notes   │");
+    println!("│ \x1b[35m★ Review on Open VSX:\x1b[0m https://open-vsx.org/extension/isaim0011/vscode-git-notes │");
+    println!("└─────────────────────────────────────────────────────────────┘\n");
+
     Ok(())
 }

@@ -56,6 +56,7 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
             await runGitNotesCommand(args, workspacePath);
             vscode.window.showInformationMessage('Note added successfully!');
             vscode.commands.executeCommand('git-notes.sync');
+            checkAndPromptReview(context);
         } catch (e: any) {
             vscode.window.showErrorMessage(`Failed to add note: ${e.message}`);
         }
@@ -154,4 +155,36 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
         const notes = gutterProvider.getNotesForLine(targetPath, targetLine);
         NotePanel.createOrShow(context.extensionUri, notes);
     }));
+}
+
+async function checkAndPromptReview(context: vscode.ExtensionContext) {
+    const KEY_DONT_ASK = 'git-notes.dontAskReview';
+    const KEY_ACTION_COUNT = 'git-notes.actionCount';
+
+    const dontAsk = context.globalState.get<boolean>(KEY_DONT_ASK, false);
+    if (dontAsk) return;
+
+    let count = context.globalState.get<number>(KEY_ACTION_COUNT, 0) + 1;
+    await context.globalState.update(KEY_ACTION_COUNT, count);
+
+    // Prompt gently on the 3rd successful interaction
+    if (count === 3) {
+        const choice = await vscode.window.showInformationMessage(
+            'Enjoying git-notes? Would you consider leaving a review on Open VSX or starring the repo on GitHub? ⭐',
+            '⭐ Star on GitHub',
+            '★ Leave a Review',
+            'Maybe Later',
+            "Don't Ask Again"
+        );
+
+        if (choice === '⭐ Star on GitHub') {
+            vscode.env.openExternal(vscode.Uri.parse('https://github.com/isaim0011/git-notes'));
+            await context.globalState.update(KEY_DONT_ASK, true);
+        } else if (choice === '★ Leave a Review') {
+            vscode.env.openExternal(vscode.Uri.parse('https://open-vsx.org/extension/isaim0011/vscode-git-notes'));
+            await context.globalState.update(KEY_DONT_ASK, true);
+        } else if (choice === "Don't Ask Again") {
+            await context.globalState.update(KEY_DONT_ASK, true);
+        }
+    }
 }

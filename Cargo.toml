@@ -3,7 +3,7 @@ members = ["crates/gn-core", "crates/gn-sync", "crates/gn-cli", "crates/gn-tui"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 authors = ["Bimo <i.s41m0011@gmail.com>"]
 license = "MIT OR Apache-2.0"

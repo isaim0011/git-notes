@@ -29,8 +29,8 @@ pub enum Commands {
     #[command(alias = "s")]
     Show(commands::show::ShowArgs),
 
-    /// Sync notes with remote [aliases: push, pull]
-    #[command(alias = "push", alias = "pull")]
+    /// Sync notes with remote or offline peers [aliases: push, pull, p2p]
+    #[command(alias = "push", alias = "pull", alias = "p2p")]
     Sync(commands::sync::SyncArgs),
 
     /// Resolve a note [aliases: ok, close]
@@ -53,6 +53,10 @@ pub enum Commands {
     #[command(alias = "pr")]
     ImportPr(commands::import_pr::ImportPrArgs),
 
+    /// Multi-provider importer for GitLab MRs, Bitbucket PRs, Jira issues, and GitHub [alias: imp]
+    #[command(alias = "imp")]
+    Import(commands::import::ImportArgs),
+
     /// AI-powered summary of open discussion threads (Gemini) [alias: sum]
     #[command(alias = "sum")]
     Summarize(commands::summarize::SummarizeArgs),
@@ -74,6 +78,10 @@ pub enum Commands {
 
     /// Generate shell completions
     Completions(commands::completions::CompletionsArgs),
+
+    /// Automatically re-anchor notes after a git rebase, amend, or cherry-pick [alias: heal]
+    #[command(alias = "heal")]
+    RebaseHeal(commands::rebase_heal::RebaseHealArgs),
 }
 
 pub fn run_cli() -> anyhow::Result<()> {
@@ -125,6 +133,10 @@ pub fn run_cli() -> anyhow::Result<()> {
             profile.record_interaction("import-pr", None, Some(&args.namespace));
             commands::import_pr::run(args)
         }
+        Commands::Import(args) => {
+            profile.record_interaction("import", None, None);
+            commands::import::run(args)
+        }
         Commands::Summarize(args) => {
             profile.record_interaction("summarize", None, Some(&args.namespace));
             commands::summarize::run(args)
@@ -144,6 +156,10 @@ pub fn run_cli() -> anyhow::Result<()> {
         Commands::Shortcuts(args) => {
             profile.record_interaction("shortcuts", None, None);
             commands::shortcuts::run(args)
+        }
+        Commands::RebaseHeal(args) => {
+            profile.record_interaction("rebase-heal", None, args.namespace.as_deref());
+            commands::rebase_heal::run(args)
         }
         Commands::Completions(args) => commands::completions::run(args),
     };

@@ -102,10 +102,25 @@ git-notes-tui
 gn d
 gn b -f src/auth.rs
 
-# 9. Sync bidirectionally with remote origin
+# 9. Auto-heal & re-anchor notes after a git rebase, amend, or cherry-pick
+gn heal
+gn heal --dry-run
+
+# 10. Offline LAN P2P sync & portable USB bundles
+gn sync --p2p                              # Spin up local LAN P2P server on Wi-Fi
+gn sync p2p connect 192.168.1.50:9418     # Pull notes directly from peer
+gn sync bundle export team_notes.bundle    # Export portable bundle for USB/AirDrop
+gn sync bundle import team_notes.bundle    # Import & merge notes bundle
+
+# 11. Multi-provider review importers (GitLab MR, Bitbucket PR, Jira, GitHub)
+gn imp gitlab --mr 12
+gn imp bitbucket --pr 42
+gn imp jira --issue PROJ-101
+
+# 12. Sync bidirectionally with remote origin
 gn push && gn pull
 
-# 10. Get an AI summary of open threads before a release (Gemini)
+# 13. Get an AI summary of open threads before a release (Gemini)
 gn sum --namespace review
 ```
 

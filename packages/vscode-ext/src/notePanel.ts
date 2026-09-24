@@ -117,7 +117,14 @@ export class NotePanel {
                 </div>
                 <div style="margin-top: 20px;">
                     <textarea id="reply-box" style="width: 100%; height: 70px;" placeholder="Add a new note / reply..."></textarea>
-                    <button style="margin-top: 8px; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;" onclick="addReply()">Post Comment</button>
+                    <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <button style="background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;" onclick="addReply()">Post Comment</button>
+                        <div style="display: flex; gap: 8px; font-size: 11px;">
+                            <a href="https://github.com/isaim0011/git-notes/discussions" style="color: var(--vscode-textLink-foreground); text-decoration: none; display: flex; align-items: center; gap: 4px;">💬 Give Feedback</a>
+                            <span style="color: var(--vscode-descriptionForeground);">•</span>
+                            <a href="https://github.com/isaim0011/git-notes" style="color: var(--vscode-textLink-foreground); text-decoration: none;">⭐ Star Repo</a>
+                        </div>
+                    </div>
                 </div>
                 <script>
                     const vscode = acquireVsCodeApi();

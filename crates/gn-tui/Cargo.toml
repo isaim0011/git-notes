@@ -20,7 +20,7 @@ name = "notes_bench"
 harness = false
 
 [dependencies]
-gn-core      = { version = "0.1.7", path = "../gn-core" }
+gn-core      = { version = "0.1.8", path = "../gn-core" }
 ratatui      = { workspace = true }
 crossterm    = { workspace = true }
 syntect      = { workspace = true }

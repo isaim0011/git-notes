@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.8] - 2026-09-24
+
+### Added
+- **`gn rebase-heal` (Semantic Commit Re-anchoring)**: Automatically detects when branch commits have been rewritten or rebased (`git rebase`, `commit --amend`, `cherry-pick`) and re-anchors orphaned notes to new commit SHAs using stable patch-IDs and commit subject heuristics. Supports `--dry-run`.
+- **Multi-Provider Importers (`gn import` / `gn imp`)**:
+  - `gn imp gitlab --mr <id>`: Pull review discussions directly from GitLab Merge Requests.
+  - `gn imp bitbucket --pr <id>`: Pull review comments from Bitbucket Cloud PRs.
+  - `gn imp jira --issue <KEY>`: Import issue discussions and comments from Jira.
+  - `gn imp pr --pr <id>`: Unified alias for GitHub PR review import.
+- **Offline Team P2P & USB Sync (`gn sync`)**:
+  - `gn sync bundle export <path>` & `import <path>`: Create portable `.bundle` packages of `refs/notes/*` for offline USB or AirDrop transfers.
+  - `gn sync p2p serve --port <port>`: Spin up an instant local LAN git-notes sync daemon on local Wi-Fi.
+  - `gn sync p2p connect <ip:port>`: Peer-to-peer note fetching and union/LWW merging without internet or GitHub.
+- **Upgraded Interactive TUI (`git-notes-tui`)**:
+  - Real file reading and `syntect` dark-theme syntax highlighting in the diff viewer.
+  - Bright bullet gutter indicators (`●`) highlighting lines with active discussion notes.
+  - Rich Markdown styling in note discussion cards (blockquotes, code blocks, bullet lists, status pills).
+  - Instant keyboard resolution and approval (`x` to resolve, `a` to approve).
+- **Gentle Community Engagement**:
+  - Added non-intrusive review and star prompts in the VS Code / Cursor extension triggered after the 3rd user action.
+  - Added `💬 Give Feedback` and `⭐ Star Repo` buttons directly to the webview discussion thread panel.
+  - Added star/review callouts in `gn doc` and `gn shortcuts`.
+  - Added `.github/ISSUE_TEMPLATE/feedback_and_questions.md`.
+
+---
+
 ## [0.1.7] - 2026-09-24
 
 ### Added

@@ -40,14 +40,18 @@ impl Default for ShortcutConfig {
         cli_aliases.insert("gn push / gn pull".into(), "Sync notes bidirectionally with remote refs/notes/* [alias: sync]".into());
         cli_aliases.insert("gn sum".into(), "AI summary of open discussion threads via Gemini [alias: summarize]".into());
         cli_aliases.insert("gn doc".into(), "Check repo health, refspecs, and stale notes [alias: doctor]".into());
+        cli_aliases.insert("gn heal".into(), "Auto-heal & re-anchor notes after git rebase / amend [alias: rebase-heal]".into());
+        cli_aliases.insert("gn p2p / gn sync --p2p".into(), "Offline LAN peer-to-peer sync / USB bundle export & import".into());
+        cli_aliases.insert("gn imp".into(), "Import reviews from GitLab MR, Bitbucket PR, Jira, or GitHub [alias: import]".into());
         cli_aliases.insert("gn i".into(), "1-second setup: configure fetch refspec & auto-sync hooks [alias: init]".into());
 
         let mut tui_keybindings = BTreeMap::new();
-        tui_keybindings.insert("↑ / ↓ or k / j".into(), "Navigate files and notes list".into());
+        tui_keybindings.insert("↑ / ↓ or k / j".into(), "Navigate files and notes list with vertical scroll".into());
         tui_keybindings.insert("Enter / →".into(), "Expand file / focus diff & note thread panel".into());
         tui_keybindings.insert("Esc / ←".into(), "Navigate back to previous pane".into());
         tui_keybindings.insert("r".into(), "Open quick reply bar for highlighted thread".into());
-        tui_keybindings.insert("a / ok".into(), "Mark highlighted note as Approved / Resolved".into());
+        tui_keybindings.insert("a".into(), "Mark highlighted note as [✔ Approved]".into());
+        tui_keybindings.insert("x / ok".into(), "Mark highlighted note as [✓ Resolved]".into());
         tui_keybindings.insert("q".into(), "Quit git-notes TUI".into());
 
         let custom_user_shortcuts = BTreeMap::new();
@@ -140,7 +144,12 @@ pub fn run(args: &ShortcutsArgs) -> Result<()> {
     } else {
         println!("\n\x1b[90m💡 Customize shortcuts anytime: \x1b[36mgn shortcuts --set <alias>=<command>\x1b[0m");
     }
-    println!();
+
+    println!("\n┌─────────────────────────────────────────────────────────────┐");
+    println!("│ \x1b[1;36m💬 Enjoying git-notes? Help us grow!\x1b[0m                        │");
+    println!("│ \x1b[33m⭐ Star on GitHub:\x1b[0m   https://github.com/isaim0011/git-notes   │");
+    println!("│ \x1b[35m★ Review on Open VSX:\x1b[0m https://open-vsx.org/extension/isaim0011/vscode-git-notes │");
+    println!("└─────────────────────────────────────────────────────────────┘\n");
 
     Ok(())
 }
