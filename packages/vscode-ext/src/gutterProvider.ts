@@ -3,6 +3,7 @@ import { Note } from './types';
 
 export class GutterProvider {
     private fileNotes = new Map<string, Note[]>();
+    private fileNotesByLine = new Map<string, Map<number, Note[]>>();
     private decorationType: vscode.TextEditorDecorationType;
 
     constructor() {
@@ -14,13 +15,27 @@ export class GutterProvider {
 
     public updateNotes(file: string, notes: Note[]) {
         this.fileNotes.set(file, notes);
+        this.indexNotesByLine(file, notes);
+    }
+
+    private indexNotesByLine(file: string, notes: Note[]) {
+        const lineMap = new Map<number, Note[]>();
+        for (const note of notes) {
+            let lineNotes = lineMap.get(note.line_number);
+            if (!lineNotes) {
+                lineNotes = [];
+                lineMap.set(note.line_number, lineNotes);
+            }
+            lineNotes.push(note);
+        }
+        this.fileNotesByLine.set(file, lineMap);
     }
 
     public refresh(editor: vscode.TextEditor, notes?: Note[]) {
         if (!editor) return;
         const file = editor.document.uri.fsPath;
         if (notes) {
-            this.fileNotes.set(file, notes);
+            this.updateNotes(file, notes);
         }
         const fileNotes = this.fileNotes.get(file) || [];
         
@@ -39,8 +54,8 @@ export class GutterProvider {
     }
 
     public getNotesForLine(file: string, line: number): Note[] {
-        const fileNotes = this.fileNotes.get(file) || [];
-        return fileNotes.filter(n => n.line_number === line);
+        const lineMap = this.fileNotesByLine.get(file);
+        return lineMap?.get(line) || [];
     }
 
     public dispose() {
