@@ -4,9 +4,8 @@ use gn_core::NotesEngine;
 
 #[derive(Args)]
 pub struct ShowArgs {
-    /// Note ID, prefix, index number (e.g. 1, 2), or "latest" / "^"
-    #[arg(default_value = "latest")]
-    pub id: String,
+    /// Note ID, index number (1, 2, ...), or "latest" / "^" (interactive picker if omitted)
+    pub id: Option<String>,
 
     /// Show entire thread
     #[arg(short, long)]
@@ -35,27 +34,41 @@ pub fn run(args: &ShowArgs) -> Result<()> {
         return Ok(());
     }
 
-    // Resolve note by:
-    // 1. "latest" / "^"
-    // 2. Numerical index ("1", "2", etc.)
-    // 3. UUID prefix match
-    let target = args.id.trim().trim_start_matches('#');
-    let found_note = if target.eq_ignore_ascii_case("latest") || target == "^" {
-        all_notes.last().cloned()
-    } else if let Ok(idx) = target.parse::<usize>() {
-        if idx >= 1 && idx <= all_notes.len() {
-            Some(all_notes[idx - 1].clone())
-        } else {
-            None
+    // If ID is omitted and in interactive terminal, prompt interactive picker!
+    let found_note = match &args.id {
+        None => {
+            if args.json {
+                all_notes.last().cloned()
+            } else {
+                match super::picker::pick_note("Select note to view:", &all_notes)? {
+                    Some(n) => Some(n.clone()),
+                    None => {
+                        println!("Cancelled.");
+                        return Ok(());
+                    }
+                }
+            }
         }
-    } else {
-        all_notes
-            .iter()
-            .find(|n| n.id.to_string().starts_with(target))
-            .cloned()
+        Some(raw_id) => {
+            let target = raw_id.trim().trim_start_matches('#');
+            if target.eq_ignore_ascii_case("latest") || target == "^" {
+                all_notes.last().cloned()
+            } else if let Ok(idx) = target.parse::<usize>() {
+                if idx >= 1 && idx <= all_notes.len() {
+                    Some(all_notes[idx - 1].clone())
+                } else {
+                    None
+                }
+            } else {
+                all_notes
+                    .iter()
+                    .find(|n| n.id.to_string().starts_with(target))
+                    .cloned()
+            }
+        }
     };
 
-    let note = found_note.ok_or_else(|| anyhow!("Note '{}' not found", args.id))?;
+    let note = found_note.ok_or_else(|| anyhow!("Note not found"))?;
 
     if args.json {
         if args.thread {

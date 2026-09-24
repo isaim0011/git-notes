@@ -5,6 +5,7 @@ pub mod doctor;
 pub mod export;
 pub mod import_pr;
 pub mod list;
+pub mod picker;
 pub mod reply;
 pub mod resolve;
 pub mod show;

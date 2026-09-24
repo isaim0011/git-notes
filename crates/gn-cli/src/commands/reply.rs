@@ -5,9 +5,8 @@ use std::process::Command;
 
 #[derive(Args)]
 pub struct ReplyArgs {
-    /// Note ID, index number (1, 2, ...), or "latest" / "^" (defaults to latest)
-    #[arg(default_value = "latest")]
-    pub id: String,
+    /// Note ID, index number (1, 2, ...), or "latest" / "^" (interactive picker if omitted)
+    pub id: Option<String>,
 
     /// Reply message
     #[arg(short, long)]
@@ -31,24 +30,36 @@ pub fn run(args: &ReplyArgs) -> Result<()> {
         return Err(anyhow!("No notes exist in the repository to reply to."));
     }
 
-    let target = args.id.trim().trim_start_matches('#');
-    let found_note = if target.eq_ignore_ascii_case("latest") || target == "^" {
-        all_notes.last().cloned()
-    } else if let Ok(idx) = target.parse::<usize>() {
-        if idx >= 1 && idx <= all_notes.len() {
-            Some(all_notes[idx - 1].clone())
-        } else {
-            None
+    // Interactive picker if ID omitted
+    let found_note = match &args.id {
+        None => match super::picker::pick_note("Select note to reply to:", &all_notes)? {
+            Some(n) => Some(n.clone()),
+            None => {
+                println!("Cancelled.");
+                return Ok(());
+            }
+        },
+        Some(raw_id) => {
+            let target = raw_id.trim().trim_start_matches('#');
+            if target.eq_ignore_ascii_case("latest") || target == "^" {
+                all_notes.last().cloned()
+            } else if let Ok(idx) = target.parse::<usize>() {
+                if idx >= 1 && idx <= all_notes.len() {
+                    Some(all_notes[idx - 1].clone())
+                } else {
+                    None
+                }
+            } else {
+                all_notes
+                    .iter()
+                    .find(|n| n.id.to_string().starts_with(target))
+                    .cloned()
+            }
         }
-    } else {
-        all_notes
-            .iter()
-            .find(|n| n.id.to_string().starts_with(target))
-            .cloned()
     };
 
     let parent_note =
-        found_note.ok_or_else(|| anyhow!("Target note '{}' not found", args.id))?;
+        found_note.ok_or_else(|| anyhow!("Target note not found"))?;
 
     let name_output = Command::new("git")
         .args(["config", "user.name"])
