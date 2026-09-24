@@ -2,7 +2,10 @@
 fn main() {
     let mut res = winres::WindowsResource::new();
     res.set("CompanyName", "Bimo");
-    res.set("FileDescription", "git-notes CLI — decentralized code comments");
+    res.set(
+        "FileDescription",
+        "git-notes CLI — decentralized code comments",
+    );
     res.set("LegalCopyright", "Copyright (C) 2026 Bimo");
     res.set("ProductName", "git-notes");
     res.set("OriginalFilename", "git-notes.exe");

@@ -44,3 +44,48 @@ fn test_engine_write_and_read() {
     assert_eq!(notes[0].id, note.id);
     assert_eq!(notes[0].body, "Hello from test");
 }
+
+#[test]
+fn test_benchmark_read_notes() {
+    let temp_dir = TempDir::new().unwrap();
+    let repo_path = temp_dir.path();
+
+    Command::new("git")
+        .args(["init"])
+        .current_dir(repo_path)
+        .status()
+        .unwrap();
+
+    Command::new("git")
+        .args(["config", "user.email", "test@test.com"])
+        .current_dir(repo_path)
+        .status()
+        .unwrap();
+    Command::new("git")
+        .args(["config", "user.name", "Test User"])
+        .current_dir(repo_path)
+        .status()
+        .unwrap();
+
+    let engine = NotesEngine::new(repo_path);
+    let count = 100;
+    for i in 0..count {
+        let note = Note::new(
+            format!("commit_{}", i),
+            None,
+            None,
+            None,
+            format!("Body content for note {}", i),
+            "Tester <test@test.com>".to_string(),
+            Namespace::Comments,
+        );
+        engine.write_note(&note).unwrap();
+    }
+
+    let start = std::time::Instant::now();
+    let notes = engine.read_notes(&Namespace::Comments).unwrap();
+    let duration = start.elapsed();
+
+    assert_eq!(notes.len(), count);
+    println!("BENCHMARK_READ_NOTES_TIME: {:?}", duration);
+}
