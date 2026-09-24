@@ -12,9 +12,20 @@ fn test_fetch_notes_performance() {
     let remote_path = remote_dir.path();
     let local_path = local_dir.path();
 
-    // Init remote git repo (bare repo or regular repo)
+    // Init remote git repo
     Command::new("git")
         .args(["init", "--bare"])
+        .current_dir(remote_path)
+        .status()
+        .unwrap();
+
+    Command::new("git")
+        .args(["config", "user.email", "remote@test.com"])
+        .current_dir(remote_path)
+        .status()
+        .unwrap();
+    Command::new("git")
+        .args(["config", "user.name", "Remote User"])
         .current_dir(remote_path)
         .status()
         .unwrap();
@@ -44,11 +55,12 @@ fn test_fetch_notes_performance() {
         .status()
         .unwrap();
 
-    // Set up notes in remote repo using NotesEngine
+    // Set up notes in remote repo using NotesEngine batch write
     let remote_engine = NotesEngine::new(remote_path);
 
     let note_count = 100;
     println!("Generating {} notes in remote...", note_count);
+    let mut remote_notes = Vec::with_capacity(note_count);
     for i in 0..note_count {
         let note = Note::new(
             format!("commit_sha_{}", i),
@@ -59,8 +71,9 @@ fn test_fetch_notes_performance() {
             "Test Author <test@example.com>".to_string(),
             Namespace::Comments,
         );
-        remote_engine.write_note(&note).unwrap();
+        remote_notes.push(note);
     }
+    remote_engine.write_notes(&remote_notes).unwrap();
 
     // Now measure fetch_notes execution time
     println!("Starting fetch_notes benchmark for {} notes...", note_count);
@@ -68,8 +81,14 @@ fn test_fetch_notes_performance() {
     let report = fetch_notes(local_path, "origin", &[Namespace::Comments], &LwwStrategy).unwrap();
     let duration = start.elapsed();
 
-    println!("Report: fetched={}, merged={}", report.fetched, report.merged);
-    println!("Time taken to fetch and merge {} notes: {:?}", note_count, duration);
+    println!(
+        "Report: fetched={}, merged={}",
+        report.fetched, report.merged
+    );
+    println!(
+        "Time taken to fetch and merge {} notes: {:?}",
+        note_count, duration
+    );
 
     assert_eq!(report.fetched, note_count);
     assert_eq!(report.merged, note_count);

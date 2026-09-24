@@ -81,7 +81,9 @@ fn test_engine_batch_write_and_read() {
         Namespace::Review,
     );
 
-    let commits = engine.write_notes(&[note1.clone(), note2.clone(), note3.clone()]).unwrap();
+    let commits = engine
+        .write_notes(&[note1.clone(), note2.clone(), note3.clone()])
+        .unwrap();
     assert_eq!(commits.len(), 2); // 1 for Comments, 1 for Review
 
     let comments = engine.read_notes(&Namespace::Comments).unwrap();
