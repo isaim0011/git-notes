@@ -77,23 +77,72 @@ pub fn run_cli() -> anyhow::Result<()> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
+    let mut profile = commands::learning::UserBehaviorProfile::load();
     let cli = Cli::parse();
 
-    match &cli.command {
-        Commands::Add(args) => commands::add::run(args),
-        Commands::Reply(args) => commands::reply::run(args),
-        Commands::List(args) => commands::list::run(args),
-        Commands::Show(args) => commands::show::run(args),
-        Commands::Sync(args) => commands::sync::run(args),
-        Commands::Resolve(args) => commands::resolve::run(args),
-        Commands::Export(args) => commands::export::run(args),
-        Commands::Doctor => commands::doctor::run(),
-        Commands::Blame(args) => commands::blame::run(args),
-        Commands::ImportPr(args) => commands::import_pr::run(args),
-        Commands::Summarize(args) => commands::summarize::run(args),
-        Commands::Init => commands::init::run(),
-        Commands::Hook(args) => commands::hook::run(args),
-        Commands::Diff(args) => commands::diff::run(args),
+    let result = match &cli.command {
+        Commands::Add(args) => {
+            profile.record_interaction("add", Some(&args.file), Some(&args.namespace));
+            commands::add::run(args)
+        }
+        Commands::Reply(args) => {
+            profile.record_interaction("reply", None, None);
+            commands::reply::run(args)
+        }
+        Commands::List(args) => {
+            profile.record_interaction("list", args.file.as_deref(), args.namespace.as_deref());
+            commands::list::run(args)
+        }
+        Commands::Show(args) => {
+            profile.record_interaction("show", None, None);
+            commands::show::run(args)
+        }
+        Commands::Sync(args) => {
+            profile.record_interaction("sync", None, None);
+            commands::sync::run(args)
+        }
+        Commands::Resolve(args) => {
+            profile.record_interaction("resolve", None, None);
+            commands::resolve::run(args)
+        }
+        Commands::Export(args) => {
+            profile.record_interaction("export", None, None);
+            commands::export::run(args)
+        }
+        Commands::Doctor => {
+            profile.record_interaction("doctor", None, None);
+            commands::doctor::run()
+        }
+        Commands::Blame(args) => {
+            profile.record_interaction("blame", Some(&args.file), Some(&args.namespace));
+            commands::blame::run(args)
+        }
+        Commands::ImportPr(args) => {
+            profile.record_interaction("import-pr", None, Some(&args.namespace));
+            commands::import_pr::run(args)
+        }
+        Commands::Summarize(args) => {
+            profile.record_interaction("summarize", None, Some(&args.namespace));
+            commands::summarize::run(args)
+        }
+        Commands::Init => {
+            profile.record_interaction("init", None, None);
+            commands::init::run()
+        }
+        Commands::Hook(args) => {
+            profile.record_interaction("hook", None, None);
+            commands::hook::run(args)
+        }
+        Commands::Diff(args) => {
+            profile.record_interaction("diff", None, Some(&args.namespace));
+            commands::diff::run(args)
+        }
         Commands::Completions(args) => commands::completions::run(args),
+    };
+
+    if let Some(tip) = profile.suggest_next_action(None) {
+        println!("{}", tip);
     }
+
+    result
 }

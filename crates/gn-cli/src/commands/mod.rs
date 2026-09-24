@@ -7,6 +7,7 @@ pub mod export;
 pub mod hook;
 pub mod import_pr;
 pub mod init;
+pub mod learning;
 pub mod list;
 pub mod picker;
 pub mod reply;

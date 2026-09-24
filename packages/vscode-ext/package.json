@@ -1,8 +1,8 @@
 {
   "name": "vscode-git-notes",
   "displayName": "git-notes",
-  "description": "Decentralized code comments — inline gutter annotations from git notes",
-  "version": "0.1.3",
+  "description": "Decentralized code comments, review discussions, and GitHub notes inline inside VS Code, Cursor, and Windsurf IDEs",
+  "version": "0.1.4",
   "publisher": "isaim0011",
   "icon": "icon.png",
   "author": { "name": "Bimo", "email": "git-notes@open-source.dev" },
@@ -12,8 +12,21 @@
     "url": "https://github.com/isaim0011/git-notes"
   },
   "engines": { "vscode": "^1.90.0" },
-  "categories": ["Other"],
-  "keywords": ["git", "notes", "review", "comments", "decentralized"],
+  "categories": ["Other", "Programming Languages", "SCM Providers"],
+  "keywords": [
+    "git",
+    "notes",
+    "git-notes",
+    "github notes",
+    "code review",
+    "comments",
+    "review",
+    "cursor",
+    "ide",
+    "discussion",
+    "inline comments",
+    "decentralized"
+  ],
   "activationEvents": ["workspaceContains:.git"],
   "main": "./dist/extension.js",
   "scripts": {
@@ -42,9 +55,5 @@
         "git-notes.defaultNamespace": { "type": "string", "default": "comments", "enum": ["comments", "review", "todos"] }
       }
     }
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.90.0",
-    "typescript": "^5.6.0"
   }
 }
