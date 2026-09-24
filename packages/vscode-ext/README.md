@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <a href="https://open-vsx.org/extension/isaim0011/vscode-git-notes"><img src="https://img.shields.io/badge/Open%20VSX-v0.1.1-blue.svg?style=flat-square" alt="Open VSX" /></a>
-  <a href="https://github.com/isaim0011/git-notes"><img src="https://img.shields.io/badge/GitHub-Repository-black.svg?style=flat-square&logo=github" alt="GitHub" /></a>
-  <a href="https://crates.io/crates/gn-cli"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg?style=flat-square" alt="crates.io" /></a>
-  <a href="https://pypi.org/project/git-notes-hooks/"><img src="https://img.shields.io/badge/PyPI-v0.1.1-blue.svg?style=flat-square" alt="PyPI" /></a>
-  <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green.svg?style=flat-square" alt="License" />
+  <a href="https://open-vsx.org/extension/isaim0011/vscode-git-notes"><img src="https://img.shields.io/open-vsx/v/isaim0011/vscode-git-notes?color=purple&label=Open%20VSX" alt="Open VSX" /></a>
+  <a href="https://github.com/isaim0011/git-notes"><img src="https://img.shields.io/github/v/release/isaim0011/git-notes?color=brightgreen&label=GitHub" alt="GitHub" /></a>
+  <a href="https://crates.io/crates/gn-cli"><img src="https://img.shields.io/crates/v/gn-cli?color=orange&label=crates.io" alt="crates.io" /></a>
+  <a href="https://pypi.org/project/git-notes-hooks/"><img src="https://img.shields.io/pypi/v/git-notes-hooks?color=blue&label=PyPI" alt="PyPI" /></a>
+  <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green.svg" alt="License" />
 </p>
 
 ---
