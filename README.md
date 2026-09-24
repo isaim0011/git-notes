@@ -262,7 +262,7 @@ pip install -e "python/gn_hooks[dev]"
 ```
 
 Stack: **Rust** 1.70+ · **Bun** 1.x · **Go** 1.21+ · **Python** 3.11+  
-PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) and [open issues](https://github.com/isaim0011/git-notes/issues).
+PRs welcome. See [CHANGELOG.md](./CHANGELOG.md), [CONTRIBUTING.md](./CONTRIBUTING.md), and [open issues](https://github.com/isaim0011/git-notes/issues).
 
 ---
 
