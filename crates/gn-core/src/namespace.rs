@@ -35,6 +35,54 @@ impl Namespace {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_from_str_builtin_without_prefix() {
+        assert_eq!(Namespace::from_str("comments"), Namespace::Comments);
+        assert_eq!(Namespace::from_str("review"), Namespace::Review);
+        assert_eq!(Namespace::from_str("todos"), Namespace::Todos);
+    }
+
+    #[test]
+    fn test_from_str_builtin_with_prefix() {
+        assert_eq!(Namespace::from_str("refs/notes/comments"), Namespace::Comments);
+        assert_eq!(Namespace::from_str("refs/notes/review"), Namespace::Review);
+        assert_eq!(Namespace::from_str("refs/notes/todos"), Namespace::Todos);
+    }
+
+    #[test]
+    fn test_from_str_custom() {
+        assert_eq!(
+            Namespace::from_str("bugs"),
+            Namespace::Custom("bugs".to_string())
+        );
+        assert_eq!(
+            Namespace::from_str("refs/notes/bugs"),
+            Namespace::Custom("bugs".to_string())
+        );
+    }
+
+    #[test]
+    fn test_ref_path_and_display() {
+        let cases = vec![
+            (Namespace::Comments, "refs/notes/comments", "comments"),
+            (Namespace::Review, "refs/notes/review", "review"),
+            (Namespace::Todos, "refs/notes/todos", "todos"),
+            (Namespace::Custom("my-notes".to_string()), "refs/notes/my-notes", "my-notes"),
+        ];
+
+        for (ns, expected_ref, expected_display) in cases {
+            assert_eq!(ns.ref_path(), expected_ref);
+            assert_eq!(ns.to_string(), expected_display);
+            assert_eq!(Namespace::from_str(expected_ref), ns);
+            assert_eq!(Namespace::from_str(expected_display), ns);
+        }
+    }
+}
+
 impl fmt::Display for Namespace {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
