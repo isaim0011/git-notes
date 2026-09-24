@@ -39,16 +39,20 @@ pub fn run(args: &ShowArgs) -> Result<()> {
 
     let note = found_note.ok_or_else(|| anyhow!("Note with ID {} not found", args.id))?;
 
+    let replies: Vec<&gn_core::Note> = if args.thread {
+        all_notes
+            .iter()
+            .filter(|n| n.thread_id.as_ref() == Some(&note.id))
+            .collect()
+    } else {
+        Vec::new()
+    };
+
     if args.json {
         if args.thread {
-            let mut thread = vec![note.clone()];
-            for n in &all_notes {
-                if let Some(parent) = &n.thread_id {
-                    if parent == &note.id {
-                        thread.push(n.clone());
-                    }
-                }
-            }
+            let mut thread = Vec::with_capacity(1 + replies.len());
+            thread.push(note.clone());
+            thread.extend(replies.into_iter().cloned());
             println!("{}", serde_json::to_string_pretty(&thread)?);
         } else {
             println!("{}", serde_json::to_string_pretty(&note)?);
@@ -72,14 +76,10 @@ pub fn run(args: &ShowArgs) -> Result<()> {
     println!("\n{}", note.body);
 
     if args.thread {
-        for n in &all_notes {
-            if let Some(parent) = &n.thread_id {
-                if parent == &note.id {
-                    println!("\n--- Reply: {} ---", n.id);
-                    println!("Author: {} | Date: {}", n.author, n.timestamp);
-                    println!("{}", n.body);
-                }
-            }
+        for n in replies {
+            println!("\n--- Reply: {} ---", n.id);
+            println!("Author: {} | Date: {}", n.author, n.timestamp);
+            println!("{}", n.body);
         }
     }
 
