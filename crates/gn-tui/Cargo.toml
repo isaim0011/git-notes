@@ -15,6 +15,10 @@ categories.workspace = true
 name = "git-notes-tui"
 path = "src/main.rs"
 
+[[bench]]
+name = "notes_bench"
+harness = false
+
 [dependencies]
 gn-core      = { version = "0.1.0", path = "../gn-core" }
 ratatui      = { workspace = true }
