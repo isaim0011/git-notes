@@ -67,3 +67,168 @@ pub fn parse_diff_hunks(patch: &str) -> Vec<HunkAnchor> {
 
     anchors
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::namespace::Namespace;
+
+    fn create_test_note(
+        commit: &str,
+        file: Option<&str>,
+        line_start: Option<u32>,
+        line_end: Option<u32>,
+    ) -> Note {
+        Note::new(
+            commit.to_string(),
+            file.map(|s| s.to_string()),
+            line_start,
+            line_end,
+            "test body".to_string(),
+            "Author <author@test.com>".to_string(),
+            Namespace::Comments,
+        )
+    }
+
+    #[test]
+    fn test_matches_note_commit_mismatch() {
+        let hunk = HunkAnchor {
+            file: "src/main.rs".to_string(),
+            line_start: 10,
+            line_end: 20,
+            commit: "commit_a".to_string(),
+        };
+
+        let note = create_test_note("commit_b", Some("src/main.rs"), Some(12), Some(15));
+        assert!(!hunk.matches_note(&note));
+    }
+
+    #[test]
+    fn test_matches_note_file_matching() {
+        let hunk = HunkAnchor {
+            file: "src/main.rs".to_string(),
+            line_start: 10,
+            line_end: 20,
+            commit: "commit_a".to_string(),
+        };
+
+        // Different file -> no match
+        let note_diff_file =
+            create_test_note("commit_a", Some("src/lib.rs"), Some(12), Some(15));
+        assert!(!hunk.matches_note(&note_diff_file));
+
+        // Same file -> match
+        let note_same_file =
+            create_test_note("commit_a", Some("src/main.rs"), Some(12), Some(15));
+        assert!(hunk.matches_note(&note_same_file));
+
+        // Note file is None -> match (file-agnostic or repository level note)
+        let note_no_file = create_test_note("commit_a", None, Some(12), Some(15));
+        assert!(hunk.matches_note(&note_no_file));
+    }
+
+    #[test]
+    fn test_matches_note_line_overlap_boundary_cases() {
+        let hunk = HunkAnchor {
+            file: "src/main.rs".to_string(),
+            line_start: 10,
+            line_end: 20,
+            commit: "commit_a".to_string(),
+        };
+
+        // Case 1: Note entirely before hunk (5..9) -> false
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(5), Some(9));
+        assert!(!hunk.matches_note(&note));
+
+        // Case 2: Note touches hunk start boundary (5..10) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(5), Some(10));
+        assert!(hunk.matches_note(&note));
+
+        // Case 3: Note overlaps start boundary (5..15) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(5), Some(15));
+        assert!(hunk.matches_note(&note));
+
+        // Case 4: Note strictly inside hunk (12..18) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(12), Some(18));
+        assert!(hunk.matches_note(&note));
+
+        // Case 5: Note spans hunk entirely (5..25) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(5), Some(25));
+        assert!(hunk.matches_note(&note));
+
+        // Case 6: Note overlaps end boundary (15..25) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(15), Some(25));
+        assert!(hunk.matches_note(&note));
+
+        // Case 7: Note touches hunk end boundary (20..25) -> true
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(20), Some(25));
+        assert!(hunk.matches_note(&note));
+
+        // Case 8: Note entirely after hunk (21..25) -> false
+        let note = create_test_note("commit_a", Some("src/main.rs"), Some(21), Some(25));
+        assert!(!hunk.matches_note(&note));
+    }
+
+    #[test]
+    fn test_matches_note_partial_line_info() {
+        let hunk = HunkAnchor {
+            file: "src/main.rs".to_string(),
+            line_start: 10,
+            line_end: 20,
+            commit: "commit_a".to_string(),
+        };
+
+        // Line start specified, line end missing -> match
+        let note1 = create_test_note("commit_a", Some("src/main.rs"), Some(15), None);
+        assert!(hunk.matches_note(&note1));
+
+        // Line start missing, line end specified -> match
+        let note2 = create_test_note("commit_a", Some("src/main.rs"), None, Some(15));
+        assert!(hunk.matches_note(&note2));
+
+        // Both missing -> match
+        let note3 = create_test_note("commit_a", Some("src/main.rs"), None, None);
+        assert!(hunk.matches_note(&note3));
+    }
+
+    #[test]
+    fn test_parse_diff_hunks() {
+        let diff = r#"diff --git a/src/main.rs b/src/main.rs
+index 1234567..89abcdef 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -1,3 +1,5 @@
+ context
+ context
++line1
++line2
+ context
+@@ -10 +20,3 @@
+-old line
++new line1
++new line2
++new line3
+"#;
+
+        let anchors = parse_diff_hunks(diff);
+        assert_eq!(anchors.len(), 2);
+        assert_eq!(
+            anchors[0],
+            HunkAnchor {
+                file: "src/main.rs".to_string(),
+                line_start: 1,
+                line_end: 5,
+                commit: "pending".to_string(),
+            }
+        );
+        assert_eq!(
+            anchors[1],
+            HunkAnchor {
+                file: "src/main.rs".to_string(),
+                line_start: 20,
+                line_end: 22,
+                commit: "pending".to_string(),
+            }
+        );
+    }
+}
