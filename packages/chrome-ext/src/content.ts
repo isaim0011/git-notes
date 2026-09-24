@@ -156,8 +156,15 @@ function injectBadge(codeElement: HTMLElement, notes: Note[]) {
       const item = document.createElement('div');
       item.className = 'gn-note-item';
       
-      const author = note.author ? `<strong>${note.author}</strong>:<br>` : '';
-      item.innerHTML = `${author}${note.body}`;
+      if (note.author) {
+        const authorEl = document.createElement('strong');
+        authorEl.textContent = note.author;
+        item.appendChild(authorEl);
+        item.appendChild(document.createTextNode(':'));
+        item.appendChild(document.createElement('br'));
+      }
+
+      item.appendChild(document.createTextNode(note.body));
       popup.appendChild(item);
     });
 
