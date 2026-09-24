@@ -71,3 +71,96 @@ impl Note {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_note_new_with_all_fields() {
+        let commit = "a1b2c3d4e5f6".to_string();
+        let file = Some("src/main.rs".to_string());
+        let line_start = Some(10);
+        let line_end = Some(20);
+        let body = "This is a test note body.".to_string();
+        let author = "Tester <test@example.com>".to_string();
+        let namespace = Namespace::Comments;
+
+        let note = Note::new(
+            commit.clone(),
+            file.clone(),
+            line_start,
+            line_end,
+            body.clone(),
+            author.clone(),
+            namespace.clone(),
+        );
+
+        assert!(!note.id.is_nil());
+        assert_eq!(note.commit, commit);
+        assert_eq!(note.file, file);
+        assert_eq!(note.line_start, line_start);
+        assert_eq!(note.line_end, line_end);
+        assert_eq!(note.body, body);
+        assert_eq!(note.author, author);
+        assert_eq!(note.namespace, namespace);
+        assert_eq!(note.thread_id, None);
+        assert_eq!(note.status, NoteStatus::Open);
+        assert!(note.tags.is_empty());
+    }
+
+    #[test]
+    fn test_note_new_with_optional_fields_none() {
+        let commit = "a1b2c3d4e5f6".to_string();
+        let body = "Note without file or lines.".to_string();
+        let author = "Tester <test@example.com>".to_string();
+        let namespace = Namespace::Comments;
+
+        let note = Note::new(
+            commit.clone(),
+            None,
+            None,
+            None,
+            body.clone(),
+            author.clone(),
+            namespace.clone(),
+        );
+
+        assert!(!note.id.is_nil());
+        assert_eq!(note.file, None);
+        assert_eq!(note.line_start, None);
+        assert_eq!(note.line_end, None);
+        assert_eq!(note.status, NoteStatus::Open);
+    }
+
+    #[test]
+    fn test_note_reply() {
+        let parent = Note::new(
+            "a1b2c3d4e5f6".to_string(),
+            Some("src/lib.rs".to_string()),
+            Some(1),
+            Some(5),
+            "Parent note".to_string(),
+            "Parent Author <parent@example.com>".to_string(),
+            Namespace::Comments,
+        );
+
+        let reply_body = "This is a reply".to_string();
+        let reply_author = "Replier <replier@example.com>".to_string();
+
+        let reply = Note::reply(&parent, reply_body.clone(), reply_author.clone());
+
+        assert_ne!(reply.id, parent.id);
+        assert!(!reply.id.is_nil());
+        assert_eq!(reply.commit, parent.commit);
+        assert_eq!(reply.file, parent.file);
+        assert_eq!(reply.line_start, parent.line_start);
+        assert_eq!(reply.line_end, parent.line_end);
+        assert_eq!(reply.namespace, parent.namespace);
+        assert_eq!(reply.thread_id, Some(parent.id));
+        assert_eq!(reply.body, reply_body);
+        assert_eq!(reply.author, reply_author);
+        assert_eq!(reply.status, NoteStatus::Open);
+        assert!(reply.tags.is_empty());
+    }
+}
