@@ -12,7 +12,7 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-gn-core      = { version = "0.1.0", path = "../gn-core" }
+gn-core      = { version = "0.1.6", path = "../gn-core" }
 tokio        = { workspace = true }
 tracing      = { workspace = true }
 thiserror    = { workspace = true }
