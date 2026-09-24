@@ -43,4 +43,9 @@ fn test_engine_write_and_read() {
     assert_eq!(notes.len(), 1);
     assert_eq!(notes[0].id, note.id);
     assert_eq!(notes[0].body, "Hello from test");
+
+    // Also test read_notes_ref
+    let notes_ref = engine.read_notes_ref(&Namespace::Comments.ref_path()).unwrap();
+    assert_eq!(notes_ref.len(), 1);
+    assert_eq!(notes_ref[0].id, note.id);
 }

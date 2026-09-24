@@ -35,16 +35,8 @@ pub fn fetch_notes(
             .args(["fetch", remote, &refspec])
             .status(); // ignore failure if remote ref doesn't exist
 
-        // For merging, we'd ideally instantiate a temporary NotesEngine configured for remote_ref,
-        // but we can just use git commands or temporarily move the ref.
-        // As a simplification, let's assume we can parse remote_ref with ls-tree directly
-        // in our current design we can fetch notes using a custom namespace.
-
         let local_notes = engine.read_notes(ns).unwrap_or_default();
-
-        // Hack to read from the remote ref namespace
-        let remote_ns = Namespace::Custom(format!("{}_{}_remote", remote, ns));
-        let remote_notes = engine.read_notes(&remote_ns).unwrap_or_default();
+        let remote_notes = engine.read_notes_ref(&remote_ref).unwrap_or_default();
 
         total_fetched += remote_notes.len();
 

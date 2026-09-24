@@ -24,9 +24,11 @@ impl NotesEngine {
     }
 
     pub fn read_notes(&self, namespace: &Namespace) -> Result<Vec<Note>> {
-        let ref_path = namespace.ref_path();
+        self.read_notes_ref(&namespace.ref_path())
+    }
 
-        let output = self.git_cmd().args(["ls-tree", "-r", &ref_path]).output()?;
+    pub fn read_notes_ref(&self, ref_path: &str) -> Result<Vec<Note>> {
+        let output = self.git_cmd().args(["ls-tree", "-r", ref_path]).output()?;
 
         if !output.status.success() {
             // If the ref doesn't exist, we just have 0 notes.
