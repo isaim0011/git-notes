@@ -1,211 +1,244 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-WIDTH = 920
-HEIGHT = 520
+# Crisp dimensions (HiDPI 2x scale for tack-sharp text rendering)
+SCALE = 2
+BASE_WIDTH = 960
+BASE_HEIGHT = 560
+WIDTH = BASE_WIDTH * SCALE
+HEIGHT = BASE_HEIGHT * SCALE
 
-font_mono = ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 16)
-font_bold = ImageFont.truetype("C:/Windows/Fonts/consolab.ttf", 16)
+font_mono = ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 15 * SCALE)
+font_bold = ImageFont.truetype("C:/Windows/Fonts/consolab.ttf", 15 * SCALE)
+font_title = ImageFont.truetype("C:/Windows/Fonts/consolab.ttf", 14 * SCALE)
+font_sub = ImageFont.truetype("C:/Windows/Fonts/consola.ttf", 13 * SCALE)
 
-def create_window():
-    img = Image.new("RGBA", (WIDTH, HEIGHT), (13, 17, 23, 255))
+def create_terminal_window():
+    # Crisp deep dark background
+    img = Image.new("RGBA", (WIDTH, HEIGHT), (11, 14, 19, 255))
     draw = ImageDraw.Draw(img)
-    # Background terminal window
-    draw.rounded_rectangle((10, 10, WIDTH - 10, HEIGHT - 10), radius=12, fill=(22, 27, 34), outline=(48, 54, 61), width=1)
-    # Window header
-    draw.rounded_rectangle((10, 10, WIDTH - 10, 48), radius=12, fill=(33, 38, 45))
-    draw.rectangle((10, 36, WIDTH - 10, 48), fill=(33, 38, 45))
-    # Window buttons
-    draw.ellipse((26, 23, 38, 35), fill=(248, 81, 73))
-    draw.ellipse((46, 23, 58, 35), fill=(227, 179, 65))
-    draw.ellipse((66, 23, 78, 35), fill=(46, 160, 67))
-    # Title
-    draw.text((WIDTH // 2 - 90, 20), "git-notes — zsh", fill=(139, 148, 158), font=font_bold)
+
+    margin = 16 * SCALE
+    # Main terminal window box with subtle border
+    draw.rounded_rectangle(
+        (margin, margin, WIDTH - margin, HEIGHT - margin),
+        radius=14 * SCALE,
+        fill=(18, 22, 29, 255),
+        outline=(45, 55, 72, 255),
+        width=1 * SCALE,
+    )
+
+    # Title bar
+    header_h = 44 * SCALE
+    draw.rounded_rectangle(
+        (margin, margin, WIDTH - margin, margin + header_h),
+        radius=14 * SCALE,
+        fill=(26, 32, 44, 255),
+    )
+    draw.rectangle(
+        (margin, margin + header_h - 10 * SCALE, WIDTH - margin, margin + header_h),
+        fill=(26, 32, 44, 255),
+    )
+    # Subtle separator under titlebar
+    draw.line(
+        [(margin, margin + header_h), (WIDTH - margin, margin + header_h)],
+        fill=(45, 55, 72, 255),
+        width=1 * SCALE,
+    )
+
+    # Window traffic lights
+    dot_y = margin + 22 * SCALE
+    draw.ellipse((margin + 18 * SCALE, dot_y - 6 * SCALE, margin + 30 * SCALE, dot_y + 6 * SCALE), fill=(248, 81, 73))
+    draw.ellipse((margin + 38 * SCALE, dot_y - 6 * SCALE, margin + 50 * SCALE, dot_y + 6 * SCALE), fill=(227, 179, 65))
+    draw.ellipse((margin + 58 * SCALE, dot_y - 6 * SCALE, margin + 70 * SCALE, dot_y + 6 * SCALE), fill=(46, 160, 67))
+
+    # Centered Title
+    title = "git-notes — decentralized code review"
+    bbox = font_title.getbbox(title)
+    tw = bbox[2] - bbox[0]
+    draw.text(((WIDTH - tw) // 2, margin + 12 * SCALE), title, fill=(160, 174, 192), font=font_title)
+
     return img, draw
 
-# Frames list
 frames = []
 durations = []
 
-def add_frame(draw_func, duration=150):
-    img, draw = create_window()
+def add_frame(draw_func, duration=120):
+    img, draw = create_terminal_window()
     draw_func(draw)
-    frames.append(img.convert("RGB"))
+    # Downsample cleanly with LANCZOS to 960x560 for tack-sharp crisp fonts
+    final_img = img.resize((BASE_WIDTH, BASE_HEIGHT), Image.Resampling.LANCZOS)
+    # Convert using adaptive palette to eliminate color banding or fuzziness
+    paletted = final_img.convert("RGB").convert("P", palette=Image.Palette.ADAPTIVE, colors=256)
+    frames.append(paletted)
     durations.append(duration)
 
-# Scenario script
-cmd1 = "git-notes add -f src/auth.rs -l 42 -m \"Validate token expiry before parsing claims\""
+PAD_X = 36 * SCALE
+PAD_Y = 82 * SCALE
+LINE_H = 28 * SCALE
+
+# Phase 1: Clean Screen -> Add Note
+cmd1 = 'git-notes add -f src/auth.rs -l 42 -m "Security: validate JWT expiry before parsing"'
+typing_steps = [8, 18, 30, 44, 58, 72, len(cmd1)]
+
+for count in typing_steps:
+    t = cmd1[:count]
+    def make_step(text):
+        def d(draw):
+            draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+            draw.text((PAD_X + 22 * SCALE, PAD_Y), text, fill=(240, 246, 252), font=font_mono)
+            tb = font_mono.getbbox(text)
+            cx = PAD_X + 22 * SCALE + (tb[2] - tb[0])
+            draw.rectangle((cx + 2 * SCALE, PAD_Y, cx + 11 * SCALE, PAD_Y + 18 * SCALE), fill=(160, 174, 192))
+        return d
+    add_frame(make_step(t), duration=100)
+
+# Output for cmd1
+def draw_cmd1_complete(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd1, fill=(240, 246, 252), font=font_mono)
+
+    y1 = PAD_Y + LINE_H + 4 * SCALE
+    draw.text((PAD_X, y1), "✔ Note 7c9a4e21 written to refs/notes/comments", fill=(74, 222, 128), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, y1 + LINE_H), "Anchored to commit 8d31ef2  |  File: src/auth.rs:42", fill=(148, 163, 184), font=font_mono)
+    draw.text((PAD_X + 22 * SCALE, y1 + 2 * LINE_H), "Author: Bimo <git-notes@open-source.dev>", fill=(148, 163, 184), font=font_mono)
+
+    # Next prompt cursor
+    y_next = y1 + 3 * LINE_H + 8 * SCALE
+    draw.text((PAD_X, y_next), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.rectangle((PAD_X + 22 * SCALE, y_next, PAD_X + 31 * SCALE, y_next + 18 * SCALE), fill=(160, 174, 192))
+
+add_frame(draw_cmd1_complete, duration=1500)
+
+# Phase 2: Clear & Run git-notes list
 cmd2 = "git-notes list"
+def draw_cmd2_typed(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd2, fill=(240, 246, 252), font=font_mono)
+add_frame(draw_cmd2_typed, duration=400)
+
+def draw_cmd2_table(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd2, fill=(240, 246, 252), font=font_mono)
+
+    table_data = [
+        ("┌──────────┬────────────────┬────────┬──────────┬───────────────────────────────────────────┐", (100, 116, 139)),
+        ("│ ID       │ LOCATION       │ AUTHOR │ STATUS   │ NOTE CONTENT                              │", (56, 189, 248)),
+        ("├──────────┼────────────────┼────────┼──────────┼───────────────────────────────────────────┤", (100, 116, 139)),
+        ("│ 7c9a4e21 │ src/auth.rs:42 │ Bimo   │ Open     │ Security: validate JWT expiry before par… │", (241, 245, 249)),
+        ("│ 3e8b091f │ src/jwt.rs:18  │ Alice  │ Approved │ Add clock skew tolerance for RFC 7519     │", (148, 163, 184)),
+        ("│ d21c448a │ src/db.rs:104  │ Bimo   │ Resolved │ Connection pooling retry logic looks good │", (148, 163, 184)),
+        ("└──────────┴────────────────┴────────┴──────────┴───────────────────────────────────────────┘", (100, 116, 139)),
+    ]
+    cur_y = PAD_Y + LINE_H + 2 * SCALE
+    for line_text, color in table_data:
+        draw.text((PAD_X, cur_y), line_text, fill=color, font=font_mono)
+        cur_y += LINE_H - 4 * SCALE
+
+    # Prompt
+    draw.text((PAD_X, cur_y + 12 * SCALE), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.rectangle((PAD_X + 22 * SCALE, cur_y + 12 * SCALE, PAD_X + 31 * SCALE, cur_y + 30 * SCALE), fill=(160, 174, 192))
+
+add_frame(draw_cmd2_table, duration=2200)
+
+# Phase 3: Interactive TUI
 cmd3 = "git-notes-tui"
-cmd4 = "git-notes sync push origin"
+def draw_cmd3_prompt(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd3, fill=(240, 246, 252), font=font_mono)
+add_frame(draw_cmd3_prompt, duration=450)
 
-# Phase 1: Typing command 1
-for i in range(1, len(cmd1) + 1, 4):
-    typed = cmd1[:i]
-    def make_draw(t):
-        def d(draw):
-            draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-            draw.text((50, 65), t, fill=(240, 246, 252), font=font_mono)
-            # cursor
-            bbox = font_mono.getbbox(t)
-            cx = 50 + (bbox[2] - bbox[0])
-            draw.rectangle((cx + 2, 65, cx + 10, 81), fill=(139, 148, 158))
-        return d
-    add_frame(make_draw(typed), duration=80)
+def draw_tui(draw):
+    # TUI Header banner
+    draw.rectangle((PAD_X - 10 * SCALE, PAD_Y - 12 * SCALE, WIDTH - PAD_X + 10 * SCALE, PAD_Y + 18 * SCALE), fill=(30, 41, 59, 255))
+    draw.text((PAD_X, PAD_Y - 8 * SCALE), "git-notes TUI  ──  Diff: feature/jwt-auth (commit 8d31ef2)", fill=(56, 189, 248), font=font_bold)
 
-# Phase 2: Command 1 Output
-def draw_cmd1_out(draw):
-    draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.text((50, 65), cmd1, fill=(240, 246, 252), font=font_mono)
-    draw.text((30, 95), "✔ Note 7c9a4e21 added to refs/notes/comments", fill=(63, 185, 80), font=font_bold)
-    draw.text((30, 120), "  Anchored to commit 8d31ef2 (src/auth.rs:42)", fill=(139, 148, 158), font=font_mono)
-    draw.text((30, 145), "  Author: Bimo <git-notes@open-source.dev>", fill=(139, 148, 158), font=font_mono)
-    draw.text((30, 180), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.rectangle((50, 180, 58, 196), fill=(139, 148, 158))
+    # Split screen layout
+    split_w = (WIDTH - 2 * PAD_X - 20 * SCALE) // 2
+    box_h = 360 * SCALE
+    top_y = PAD_Y + 30 * SCALE
 
-add_frame(draw_cmd1_out, duration=1400)
+    # Left: Code Diff Panel
+    draw.rounded_rectangle((PAD_X, top_y, PAD_X + split_w, top_y + box_h), radius=8 * SCALE, outline=(71, 85, 105), width=1 * SCALE)
+    draw.text((PAD_X + 16 * SCALE, top_y + 12 * SCALE), "src/auth.rs", fill=(241, 245, 249), font=font_bold)
 
-# Phase 3: Typing command 2 (git-notes list)
-for i in range(1, len(cmd2) + 1, 3):
-    typed2 = cmd2[:i]
-    def make_draw2(t):
-        def d(draw):
-            draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-            draw.text((50, 65), cmd1, fill=(240, 246, 252), font=font_mono)
-            draw.text((30, 95), "✔ Note 7c9a4e21 added to refs/notes/comments", fill=(63, 185, 80), font=font_bold)
-            draw.text((30, 120), "  Anchored to commit 8d31ef2 (src/auth.rs:42)", fill=(139, 148, 158), font=font_mono)
-            draw.text((30, 145), "  Author: Bimo <git-notes@open-source.dev>", fill=(139, 148, 158), font=font_mono)
-            draw.text((30, 180), "❯ ", fill=(56, 189, 248), font=font_bold)
-            draw.text((50, 180), t, fill=(240, 246, 252), font=font_mono)
-            bbox = font_mono.getbbox(t)
-            cx = 50 + (bbox[2] - bbox[0])
-            draw.rectangle((cx + 2, 180, cx + 10, 196), fill=(139, 148, 158))
-        return d
-    add_frame(make_draw2(typed2), duration=90)
-
-# Phase 4: Command 2 Output (Table)
-def draw_cmd2_out(draw):
-    draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.text((50, 65), cmd1, fill=(240, 246, 252), font=font_mono)
-    draw.text((30, 95), "✔ Note 7c9a4e21 added to refs/notes/comments", fill=(63, 185, 80), font=font_bold)
-    draw.text((30, 130), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.text((50, 130), "git-notes list", fill=(240, 246, 252), font=font_mono)
-    
-    table_lines = [
-        ("┌──────────┬────────────────┬────────┬──────────┬──────────────────────────────────────────┐", (139, 148, 158)),
-        ("│ ID       │ LOCATION       │ AUTHOR │ STATUS   │ NOTE CONTENT                             │", (88, 166, 255)),
-        ("├──────────┼────────────────┼────────┼──────────┼──────────────────────────────────────────┤", (139, 148, 158)),
-        ("│ 7c9a4e21 │ src/auth.rs:42 │ Bimo   │ Open     │ Validate token expiry before parsing cl… │", (240, 246, 252)),
-        ("│ d3f18a09 │ src/jwt.rs:18  │ Alice  │ Resolved │ Add unit test for malformed signature    │", (139, 148, 158)),
-        ("└──────────┴────────────────┴────────┴──────────┴──────────────────────────────────────────┘", (139, 148, 158)),
+    code_lines = [
+        (" 39   pub fn verify(header: &str) -> Result<Token> {", (148, 163, 184)),
+        (" 40       let token = header.strip_prefix(\"Bearer \")?;", (148, 163, 184)),
+        ("+41 >     if token.is_expired() {", (74, 222, 128)),
+        ("+42 >         return Err(AuthError::Expired);", (251, 146, 60)),
+        ("+43 >     }", (74, 222, 128)),
+        (" 44       let claims = decode_claims(token)?;", (148, 163, 184)),
+        (" 45       Ok(claims)", (148, 163, 184)),
+        (" 46   }", (148, 163, 184)),
     ]
-    y = 160
-    for line, color in table_lines:
-        draw.text((30, y), line, fill=color, font=font_mono)
-        y += 22
-    
-    draw.text((30, y + 15), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.rectangle((50, y + 15, 58, y + 31), fill=(139, 148, 158))
+    cy = top_y + 44 * SCALE
+    for c_line, color in code_lines:
+        if ">" in c_line:
+            draw.rectangle((PAD_X + 6 * SCALE, cy - 2 * SCALE, PAD_X + split_w - 6 * SCALE, cy + 22 * SCALE), fill=(56, 189, 248, 32))
+        draw.text((PAD_X + 16 * SCALE, cy), c_line, fill=color, font=font_mono)
+        cy += 26 * SCALE
 
-add_frame(draw_cmd2_out, duration=1600)
+    # Right: Discussion Thread Panel
+    rx = PAD_X + split_w + 20 * SCALE
+    draw.rounded_rectangle((rx, top_y, rx + split_w, top_y + box_h), radius=8 * SCALE, outline=(56, 189, 248), width=1 * SCALE)
+    draw.text((rx + 16 * SCALE, top_y + 12 * SCALE), "Thread #7c9a4e21  [Open]", fill=(56, 189, 248), font=font_bold)
 
-# Phase 5: Launching TUI (git-notes-tui)
-def draw_launch_tui(draw):
-    draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.text((50, 65), "git-notes-tui", fill=(240, 246, 252), font=font_mono)
-    draw.text((30, 95), "Loading TUI diff viewer & comment threads...", fill=(139, 148, 158), font=font_mono)
-
-add_frame(draw_launch_tui, duration=600)
-
-# Phase 6: TUI Interface View
-def draw_tui_view(draw):
-    # Header bar
-    draw.rectangle((10, 48, WIDTH - 10, 75), fill=(22, 27, 34))
-    draw.text((30, 52), "git-notes TUI  ──  Diff: feature/jwt-auth (commit 8d31ef2)", fill=(88, 166, 255), font=font_bold)
-    
-    # Left Box: Diff Viewer
-    lx, ly, lw, lh = 25, 85, 430, 370
-    draw.rounded_rectangle((lx, ly, lx + lw, ly + lh), radius=6, outline=(48, 54, 61), width=1)
-    draw.text((lx + 15, ly + 10), "src/auth.rs", fill=(240, 246, 252), font=font_bold)
-    
-    code = [
-        (" 39   pub fn verify(header: &str) -> Result<Token> {", (139, 148, 158)),
-        (" 40       let token = header.strip_prefix(\"Bearer \")?;", (139, 148, 158)),
-        ("+41 >     if token.is_expired() {", (63, 185, 80)),
-        ("+42 >         return Err(AuthError::Expired);", (240, 136, 62)),
-        ("+43 >     }", (63, 185, 80)),
-        (" 44       let claims = decode_claims(token)?;", (139, 148, 158)),
-        (" 45       Ok(claims)", (139, 148, 158)),
-        (" 46   }", (139, 148, 158)),
-    ]
-    cy = ly + 40
-    for line, color in code:
-        if ">" in line:
-            draw.rectangle((lx + 5, cy - 2, lx + lw - 5, cy + 20), fill=(56, 189, 248, 25))
-        draw.text((lx + 15, cy), line, fill=color, font=font_mono)
-        cy += 24
-        
-    # Right Box: Discussion Thread
-    rx, ry, rw, rh = 465, 85, 430, 370
-    draw.rounded_rectangle((rx, ry, rx + rw, ry + rh), radius=6, outline=(56, 189, 248), width=1)
-    draw.text((rx + 15, ry + 10), "Thread #7c9a4e21  [Open]", fill=(56, 189, 248), font=font_bold)
-    
-    thread = [
-        ("👤 Bimo (Author) ── 2 mins ago", (88, 166, 255)),
-        ("   \"Validate token expiry before parsing claims\"", (240, 246, 252)),
+    thread_items = [
+        ("👤 Bimo (Author) ── 2 mins ago", (56, 189, 248)),
+        ("   \"Security: validate JWT expiry before parsing\"", (241, 245, 249)),
         ("", (0,0,0)),
         ("↳ 👤 Alice ── 1 min ago", (168, 85, 247)),
-        ("   \"Good catch! Make sure clock skew tolerance", (230, 237, 243)),
-        ("    is set to 30s as per RFC 7519.\"", (230, 237, 243)),
+        ("   \"Make sure clock skew tolerance is set to", (226, 232, 240)),
+        ("    30 seconds as per RFC 7519.\"", (226, 232, 240)),
         ("", (0,0,0)),
-        ("↳ 👤 Bimo ── just now", (88, 166, 255)),
-        ("   \"Updated with 30s leeway!\"", (63, 185, 80)),
+        ("↳ 👤 Bimo ── just now", (74, 222, 128)),
+        ("   \"Updated with 30s leeway!\"", (74, 222, 128)),
     ]
-    ty = ry + 40
-    for line, color in thread:
-        draw.text((rx + 15, ty), line, fill=color, font=font_mono)
-        ty += 22
-        
-    # Bottom keybinding bar
-    draw.rounded_rectangle((25, 465, WIDTH - 25, 495), radius=6, fill=(33, 38, 45))
-    draw.text((40, 472), "[r] Reply    [a] Approve    [x] Resolve    [n] Next Note    [q] Quit", fill=(139, 148, 158), font=font_bold)
+    ty = top_y + 44 * SCALE
+    for t_line, color in thread_items:
+        draw.text((rx + 16 * SCALE, ty), t_line, fill=color, font=font_mono)
+        ty += 24 * SCALE
 
-add_frame(draw_tui_view, duration=2400)
+    # Bottom shortcut bar
+    by = top_y + box_h + 12 * SCALE
+    draw.rounded_rectangle((PAD_X, by, WIDTH - PAD_X, by + 34 * SCALE), radius=6 * SCALE, fill=(30, 41, 59))
+    draw.text((PAD_X + 16 * SCALE, by + 8 * SCALE), "[r] Reply    [a] Approve    [x] Resolve    [n] Next Note    [q] Quit", fill=(148, 163, 184), font=font_bold)
 
-# Phase 7: Syncing to remote (git-notes sync push)
-for i in range(1, len(cmd4) + 1, 4):
-    typed4 = cmd4[:i]
-    def make_draw4(t):
-        def d(draw):
-            draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-            draw.text((50, 65), t, fill=(240, 246, 252), font=font_mono)
-            bbox = font_mono.getbbox(t)
-            cx = 50 + (bbox[2] - bbox[0])
-            draw.rectangle((cx + 2, 65, cx + 10, 81), fill=(139, 148, 158))
-        return d
-    add_frame(make_draw4(typed4), duration=80)
+add_frame(draw_tui, duration=3200)
 
-# Phase 8: Sync Output & GitHub Bridge
-def draw_sync_out(draw):
-    draw.text((30, 65), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.text((50, 65), cmd4, fill=(240, 246, 252), font=font_mono)
-    draw.text((30, 95), "✔ Fetching remote notes from origin...", fill=(139, 148, 158), font=font_mono)
-    draw.text((30, 120), "✔ Merged with remote (strategy: LWW + Union)", fill=(63, 185, 80), font=font_mono)
-    draw.text((30, 145), "✔ Pushing refs/notes/comments -> origin (1 new note, 2 replies)", fill=(63, 185, 80), font=font_bold)
-    draw.text((30, 180), "✔ GitHub Bridge: Synced 3 comments to PR #14 inline discussion", fill=(56, 189, 248), font=font_bold)
-    draw.text((30, 215), "❯ ", fill=(56, 189, 248), font=font_bold)
-    draw.rectangle((50, 215, 58, 231), fill=(139, 148, 158))
+# Phase 4: Sync to Remote & GitHub PR
+cmd4 = "git-notes sync push origin"
+def draw_cmd4_prompt(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd4, fill=(240, 246, 252), font=font_mono)
+add_frame(draw_cmd4_prompt, duration=450)
 
-add_frame(draw_sync_out, duration=2600)
+def draw_cmd4_result(draw):
+    draw.text((PAD_X, PAD_Y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.text((PAD_X + 22 * SCALE, PAD_Y), cmd4, fill=(240, 246, 252), font=font_mono)
 
-print(f"Total frames: {len(frames)}")
-# Optimize & save as animated GIF
+    y4 = PAD_Y + LINE_H + 4 * SCALE
+    draw.text((PAD_X, y4), "✔ Fetching remote notes from origin...", fill=(148, 163, 184), font=font_mono)
+    draw.text((PAD_X, y4 + LINE_H), "✔ Merged 1 new remote note (strategy: LWW + Union)", fill=(74, 222, 128), font=font_mono)
+    draw.text((PAD_X, y4 + 2 * LINE_H), "✔ Pushing refs/notes/comments -> origin (1 note, 2 replies)", fill=(74, 222, 128), font=font_bold)
+    draw.text((PAD_X, y4 + 3 * LINE_H + 6 * SCALE), "✔ GitHub Bridge: Synced 3 comments to PR #14 inline discussion", fill=(56, 189, 248), font=font_bold)
+
+    # Clean final prompt
+    fin_y = y4 + 4 * LINE_H + 16 * SCALE
+    draw.text((PAD_X, fin_y), "❯ ", fill=(56, 189, 248), font=font_bold)
+    draw.rectangle((PAD_X + 22 * SCALE, fin_y, PAD_X + 31 * SCALE, fin_y + 18 * SCALE), fill=(160, 174, 192))
+
+add_frame(draw_cmd4_result, duration=3500)
+
+print(f"Generated {len(frames)} crisp frames.")
+# Save clean animated GIF without fuzzy artifacts or text doubling
 frames[0].save(
     "assets/demo.gif",
     save_all=True,
     append_images=frames[1:],
     duration=durations,
     loop=0,
-    optimize=True
+    disposal=2,  # Clear each frame to background so text NEVER doubles up
 )
-print("Saved assets/demo.gif successfully!")
+print("Saved razor-sharp assets/demo.gif successfully!")
