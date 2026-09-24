@@ -1,8 +1,12 @@
 pub mod add;
+pub mod blame;
 pub mod completions;
+pub mod doctor;
 pub mod export;
+pub mod import_pr;
 pub mod list;
 pub mod reply;
 pub mod resolve;
 pub mod show;
+pub mod summarize;
 pub mod sync;

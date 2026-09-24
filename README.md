@@ -1,40 +1,46 @@
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/isaim0011/git-notes/main/assets/icon.svg" width="80" height="80" alt="git-notes logo" />
+
 # git-notes
 
-> **Decentralized code comments — history-safe, namespace-scoped, sync anywhere.**
+**Decentralized code reviews and annotations stored directly in Git.**  
+No database. No vendor. No history rewrites. Just `refs/notes/*`.
 
 [![CI](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/isaim0011/git-notes/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/isaim0011/git-notes?color=brightgreen)](https://github.com/isaim0011/git-notes/releases)
+[![Release](https://img.shields.io/github/v/release/isaim0011/git-notes?color=brightgreen&label=Release)](https://github.com/isaim0011/git-notes/releases)
+[![Crates.io](https://img.shields.io/crates/v/gn-cli?label=crates.io&color=orange)](https://crates.io/crates/gn-cli)
+[![PyPI](https://img.shields.io/pypi/v/git-notes-hooks?label=PyPI&color=blue)](https://pypi.org/project/git-notes-hooks/)
+[![Open VSX](https://img.shields.io/badge/Open%20VSX-v0.1.2-purple)](https://open-vsx.org/extension/isaim0011/vscode-git-notes)
+[![GitHub Action](https://img.shields.io/badge/GitHub_Action-Marketplace-2088FF?logo=github-actions&logoColor=white)](https://github.com/marketplace/actions/git-notes-sync)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](./LICENSE-MIT)
-[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange?logo=rust)](https://www.rust-lang.org)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/isaim0011/git-notes/blob/main/.github/pull_request_template.md)
-[![GitHub Stars](https://img.shields.io/github/stars/isaim0011/git-notes?style=social)](https://github.com/isaim0011/git-notes/stargazers)
 [![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/isaim0011)
 
-`git-notes` is a polyglot open-source platform that brings persistent, decentralized code comments to **every surface** — without ever touching your commit history.
+</div>
+
+---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/isaim0011/git-notes/main/assets/demo.gif" alt="git-notes Terminal Demo" width="100%" />
+  <img src="https://raw.githubusercontent.com/isaim0011/git-notes/main/assets/demo.gif" alt="git-notes Terminal Demo — add → TUI → sync → GitHub PR" width="100%" />
 </p>
 
 ---
 
-## Features
+## Why git-notes?
 
-| Feature | Description |
+Code review comments die in GitHub. PRs close. Context vanishes. git-notes keeps every discussion **inside the repository** — synced via standard Git, readable in your editor, terminal, and browser.
+
+| The problem | git-notes solves it by |
 |---|---|
-| 🔒 **Zero history rewrite** | Notes live in `refs/notes/*`, never in commits |
-| 🌐 **Works everywhere** | CLI · TUI · VS Code · Chrome · Web · CI |
-| 📦 **Offline-first** | Notes live in the repo — no server needed |
-| 💬 **Threaded replies** | Reply directly to existing notes in-tree |
-| 🔀 **Smart merge** | Union + LWW strategy on sync conflicts |
-| 🔌 **Pluggable** | Add namespaces, merge strategies, surfaces |
-| 🐙 **GitHub Bridge** | Sync notes ↔ PR review comments |
+| PR comments disappear after merge | Notes live in `refs/notes/*` — permanent, versioned |
+| Review context is vendor-locked | Portable across GitHub, GitLab, Gitea, Forgejo |
+| No offline access to discussions | Notes clone with the repo — zero network required |
+| Context switches between IDE and browser | Inline annotations in VS Code, TUI, Chrome, `git blame` |
+| Team knowledge dies with the PR | Notes sync via `git push` / `git fetch` like any ref |
 
 ---
 
-## Installation
-
-### ⚡ One-Line Quick Install
+## Install in 10 seconds
 
 **Linux / macOS:**
 ```bash
@@ -46,100 +52,153 @@ curl -fsSL https://raw.githubusercontent.com/isaim0011/git-notes/main/install.sh
 irm https://raw.githubusercontent.com/isaim0011/git-notes/main/install.ps1 | iex
 ```
 
-### 📦 Package Managers
+**Homebrew (macOS / Linux):**
+```bash
+brew install isaim0011/tap/git-notes
+```
 
-**Rust (via crates.io):**
+**Scoop (Windows):**
+```powershell
+scoop bucket add git-notes-bucket https://github.com/isaim0011/scoop-bucket
+scoop install git-notes
+```
+
+**Cargo:**
 ```bash
 cargo install gn-cli --bin git-notes
-cargo install gn-tui --bin git-notes-tui
 ```
 
-**Python Git Hooks (via PyPI):**
-```bash
-pip install git-notes-hooks
-git-notes-hooks install
-```
-
-**VS Code & Cursor IDE:**
-Install directly from the Extensions tab or via [Open VSX](https://open-vsx.org/extension/isaim0011/vscode-git-notes):
-```bash
-code --install-extension isaim0011.vscode-git-notes
-```
-
-**Chrome Extension:**
-Download [`git-notes-chrome.zip`](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-chrome.zip) from Releases and load unpacked into Chrome (`chrome://extensions`).
-
-### 📦 Standalone Binaries
-
-Prebuilt standalone binaries are available from [GitHub Releases v0.1.0](https://github.com/isaim0011/git-notes/releases/tag/v0.1.0):
-
-| Platform | Binary | Direct Download |
-|---|---|---|
-| **Windows (x86_64)** | `git-notes.exe` | [Download .exe](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe) |
-| **Linux (x86_64)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-linux-x86_64) |
-| **macOS (Apple Silicon)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-aarch64) |
-| **macOS (Intel)** | `git-notes` | [Download binary](https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-macos-x86_64) |
+→ [See all platforms & download binaries](https://github.com/isaim0011/git-notes/releases)
 
 ---
 
 ## Quick Start
 
 ```bash
-# Add a comment on line 42 of main.rs
-git-notes add -f src/main.rs -l 42 -m "Why is this O(n²)?"
+# 1. Add a note anchored to line 42 of an auth file
+git-notes add -f src/auth.rs -l 42 -m "Validate JWT expiry before decoding claims"
 
-# Reply to an existing note thread
-git-notes reply a1b2c3 -m "Fixed in commit abc123!"
+# 2. Check repo health (hooks, refs, stale notes)
+git-notes doctor
 
-# Show a specific note and its full reply thread
-git-notes show a1b2c3 --thread
-
-# List all review notes
-git-notes list --namespace review
-
-# Sync to remote
-git-notes sync push
-
-# Mark resolved
-git-notes resolve a1b2c3 --status approved
-
-# Launch TUI browser
+# 3. Browse notes in the interactive TUI
 git-notes-tui
 
-# Export static HTML viewer
-git-notes export --format html --out ./docs/notes/
+# 4. See notes inline in git blame
+git-notes blame --file src/auth.rs
+
+# 5. Pull in a team's existing GitHub PR review comments instantly
+git-notes import-pr --pr 42
+
+# 6. Sync bidirectionally with origin
+git-notes sync push && git-notes sync pull
+
+# 7. Get an AI summary of all open threads before a release
+git-notes summarize --namespace review
+
+# 8. List, filter, resolve
+git-notes list --namespace review --status open
+git-notes resolve a1b2c3 --status approved
 ```
 
 ---
 
-## Namespaces
+## Features
 
-| Ref | Purpose |
-|---|---|
-| `refs/notes/comments` | General code discussions |
-| `refs/notes/review` | Formal review approvals / rejections |
-| `refs/notes/todos` | Tracked TODO items |
-| `refs/notes/ci` | *(extensible)* CI annotations |
-| `refs/notes/security` | *(extensible)* Security findings |
+<table>
+<tr>
+<td width="50%">
+
+### 🔒 Permanent & Portable
+Notes live in `refs/notes/*` — never touch your commit history. Clone the repo, get the discussions.
+
+### ⚡ Stale-Note Detection
+`git-notes doctor` warns when commented code has moved or been deleted since the note was anchored. **Nobody else does this.**
+
+### 🤖 AI Thread Summarizer
+`git-notes summarize` generates an LLM digest of all open discussion threads — the "what's blocking release?" command.
+
+### 🔀 Conflict-Free Merge
+Union + Last-Write-Wins strategy means concurrent note editing never blocks your `git pull`.
+
+</td>
+<td width="50%">
+
+### 🌐 Every Surface
+CLI → TUI → VS Code → Chrome Extension → GitHub PR comments — one note, everywhere.
+
+### 🐙 GitHub Action CI Loop
+Install [`isaim0011/git-notes`](https://github.com/marketplace/actions/git-notes-sync) in any repo — auto-posts notes as inline PR review comments.
+
+### 📋 PR Comment Importer
+`git-notes import-pr --pr 42` pulls your existing GitHub PR discussions into notes in seconds.
+
+### 💬 Threaded Discussions
+Reply, approve, reject, resolve — full conversation trees anchored to specific lines.
+
+</td>
+</tr>
+</table>
+
+---
+
+## GitHub Action — CI Viral Loop
+
+Every repo that installs this action links back to git-notes:
+
+```yaml
+# .github/workflows/git-notes.yml
+name: Sync git-notes
+on: [pull_request, push]
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: isaim0011/git-notes@v0.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          namespace: comments
+```
+
+**What it does:** Downloads the CLI, fetches `refs/notes/*`, and posts open notes as inline PR review comments — automatically. [→ GitHub Marketplace](https://github.com/marketplace/actions/git-notes-sync)
 
 ---
 
 ## Architecture
 
 ```
-SURFACES                  CORE ENGINE               DISTRIBUTION
-────────                  ───────────               ────────────
-CLI (Rust/clap)  ──┐
-TUI (Rust/ratatui)─┤     ┌─────────────┐     ┌──────────────────┐
-VS Code (TS/Bun) ──┼────▶│  gn-core    │────▶│   Sync Layer     │────▶ Remote
-Chrome Ext (TS)  ──┤     │  (gix-based)│     │ union+LWW merge  │
-Web Viewer (Vite)──┘     └──────┬──────┘     └────────┬─────────┘
-                                │                      │
-                         Namespaces              GitHub Bridge
-                    refs/notes/comments          (Go service)
-                    refs/notes/review       notes ↔ PR comments
-                    refs/notes/todos
+SURFACES                   CORE                     DISTRIBUTION
+────────                   ────                     ────────────
+CLI  (Rust/clap)  ─┐
+TUI  (ratatui)    ─┤   ┌───────────┐           ┌────────────────┐
+VS Code (TypeScript)┼──▶│  gn-core  │──────────▶│  Sync Layer    │──▶ git remote
+Chrome  (TypeScript)┤   │  (gix)    │           │  union + LWW   │
+Web Viewer (Vite)  ─┘   └─────┬─────┘           └───────┬────────┘
+                               │                         │
+                          refs/notes/*            GitHub Bridge
+                          /comments               (Go daemon)
+                          /review           notes ↔ PR comments
+                          /todos
 ```
+
+---
+
+## Ecosystem
+
+| Package | Registry | Install |
+|---|---|---|
+| `gn-cli` (CLI binary) | [crates.io](https://crates.io/crates/gn-cli) | `cargo install gn-cli --bin git-notes` |
+| `gn-tui` (TUI browser) | [crates.io](https://crates.io/crates/gn-tui) | `cargo install gn-tui --bin git-notes-tui` |
+| `gn-core` (Rust library) | [crates.io](https://crates.io/crates/gn-core) | `cargo add gn-core` |
+| `git-notes-hooks` (Python) | [PyPI](https://pypi.org/project/git-notes-hooks/) | `pip install git-notes-hooks` |
+| VS Code Extension | [Open VSX](https://open-vsx.org/extension/isaim0011/vscode-git-notes) | `code --install-extension isaim0011.vscode-git-notes` |
+| GitHub Action | [Marketplace](https://github.com/marketplace/actions/git-notes-sync) | `uses: isaim0011/git-notes@v0.1.0` |
+| Docker (bridge daemon) | [GHCR](https://github.com/isaim0011/git-notes/pkgs/container/github-bridge) | `docker pull ghcr.io/isaim0011/git-notes/github-bridge:latest` |
 
 ---
 
@@ -148,57 +207,55 @@ Web Viewer (Vite)──┘     └──────┬──────┘    
 ```
 git-notes/
 ├── crates/
-│   ├── gn-core/        # Core engine (pure Rust, gix)
-│   ├── gn-cli/         # CLI binary (clap v4)
-│   ├── gn-tui/         # TUI (ratatui + crossterm)
-│   └── gn-sync/        # Sync / merge layer
+│   ├── gn-core/        # Core engine — reads/writes git note objects (gix)
+│   ├── gn-cli/         # CLI binary — clap v4, all subcommands
+│   ├── gn-tui/         # TUI browser — ratatui + syntect syntax highlighting
+│   └── gn-sync/        # Sync/merge layer — union + LWW strategies
 ├── packages/
-│   ├── vscode-ext/     # VS Code extension (TypeScript)
+│   ├── vscode-ext/     # VS Code & Cursor extension (TypeScript/Bun)
 │   ├── chrome-ext/     # Chrome MV3 extension (TypeScript)
-│   └── web-viewer/     # Static HTML export (Vite + Preact)
+│   ├── homebrew/       # Homebrew formula
+│   └── scoop/          # Windows Scoop manifest
 ├── services/
-│   └── github-bridge/  # GitHub Action + daemon (Go)
+│   └── github-bridge/  # HTTP bridge daemon — notes ↔ GitHub PR (Go)
 ├── python/
-│   └── gn_hooks/       # Git hooks helper (pip)
-└── .github/workflows/  # CI + Release
+│   └── gn_hooks/       # Auto-sync git hooks (pip install)
+├── action.yml          # GitHub Marketplace action
+├── install.sh          # Universal Linux/macOS installer
+└── install.ps1         # Universal Windows installer
 ```
 
 ---
 
 ## Contributing
 
-This project uses:
-- **Rust** 1.70+ for core crates
-- **Bun** 1.x for TypeScript packages
-- **Go** 1.21+ for services
-- **Python** 3.11+ for hooks
-
 ```bash
 git clone https://github.com/isaim0011/git-notes.git
 cd git-notes
 
-# Rust
+# Rust (CLI + TUI + core)
 cargo build --workspace
 cargo test --workspace
 
-# TypeScript
-bun install
-bun run build
+# TypeScript (VS Code + Chrome extensions)
+bun install && bun run build
 
-# Go
-go work sync
-go test ./...
+# Go (GitHub bridge daemon)
+go work sync && go test ./...
 
-# Python
-cd python/gn_hooks && pip install -e ".[dev]"
+# Python (git hooks)
+pip install -e "python/gn_hooks[dev]"
 ```
+
+Stack: **Rust** 1.70+ · **Bun** 1.x · **Go** 1.21+ · **Python** 3.11+  
+PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) and [open issues](https://github.com/isaim0011/git-notes/issues).
 
 ---
 
 ## License
 
-Licensed under either of:
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
-- MIT License ([LICENSE-MIT](LICENSE-MIT))
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache 2.0](LICENSE-APACHE) at your option.
 
-at your option.
+<div align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/isaim0011">Bimo</a> — <a href="https://ko-fi.com/isaim0011">Support on Ko-fi</a></sub>
+</div>

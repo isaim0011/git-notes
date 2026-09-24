@@ -1,0 +1,28 @@
+{
+  "version": "0.1.0",
+  "description": "Decentralized code comments and inline reviews stored directly in Git",
+  "homepage": "https://github.com/isaim0011/git-notes",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/isaim0011/git-notes/releases/download/v0.1.0/git-notes-windows-x86_64.exe",
+      "hash": "cdaad980f2d8310af470b29efc3f6056a29793be4bf1bf96f47284fd219d0a46",
+      "bin": [
+        [
+          "git-notes-windows-x86_64.exe",
+          "git-notes"
+        ]
+      ]
+    }
+  },
+  "checkver": {
+    "github": "https://github.com/isaim0011/git-notes"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/isaim0011/git-notes/releases/download/v$version/git-notes-windows-x86_64.exe"
+      }
+    }
+  }
+}

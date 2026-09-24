@@ -1,0 +1,93 @@
+name: 'git-notes Sync'
+description: 'Auto-sync decentralized git-notes ↔ GitHub PR inline review comments in CI.'
+author: 'Bimo'
+branding:
+  icon: 'message-circle'
+  color: 'blue'
+inputs:
+  namespace:
+    description: 'Notes namespace to sync (comments, review, todos, or all)'
+    required: false
+    default: 'comments'
+  github-token:
+    description: 'GitHub token with pull-requests:write permission'
+    required: true
+    default: '${{ github.token }}'
+  version:
+    description: 'git-notes CLI version to install'
+    required: false
+    default: 'v0.1.0'
+outputs:
+  notes-synced:
+    description: 'Number of notes synced from remote'
+    value: ${{ steps.sync.outputs.notes_synced }}
+  comments-posted:
+    description: 'Number of new PR inline comments posted'
+    value: ${{ steps.bridge.outputs.comments_posted }}
+runs:
+  using: composite
+  steps:
+    - name: Detect platform
+      id: platform
+      shell: bash
+      run: |
+        ARCH=$(uname -m)
+        OS=$(uname -s)
+        case "$OS" in
+          Linux)  case "$ARCH" in x86_64) echo "binary=git-notes-linux-x86_64" >> $GITHUB_OUTPUT ;; *) echo "ERROR: unsupported arch $ARCH"; exit 1 ;; esac ;;
+          Darwin) case "$ARCH" in arm64) echo "binary=git-notes-macos-aarch64" >> $GITHUB_OUTPUT ;; x86_64) echo "binary=git-notes-macos-x86_64" >> $GITHUB_OUTPUT ;; *) exit 1 ;; esac ;;
+          *) echo "Unsupported OS: $OS"; exit 1 ;;
+        esac
+
+    - name: Install git-notes CLI
+      shell: bash
+      run: |
+        URL="https://github.com/isaim0011/git-notes/releases/download/${{ inputs.version }}/${{ steps.platform.outputs.binary }}"
+        echo "Downloading git-notes from $URL..."
+        curl -fsSL "$URL" -o /usr/local/bin/git-notes
+        chmod +x /usr/local/bin/git-notes
+        git-notes --version
+
+    - name: Configure notes refspec
+      shell: bash
+      run: |
+        git config --add remote.origin.fetch '+refs/notes/*:refs/notes/*' 2>/dev/null || true
+        git fetch origin '+refs/notes/*:refs/notes/*' 2>/dev/null || true
+
+    - name: Sync notes from remote
+      id: sync
+      shell: bash
+      run: |
+        COUNT=$(git-notes sync pull --namespace ${{ inputs.namespace }} --json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('fetched',0))" 2>/dev/null || echo 0)
+        echo "notes_synced=$COUNT" >> $GITHUB_OUTPUT
+        echo "Synced $COUNT notes from remote"
+
+    - name: Post notes as PR inline comments
+      id: bridge
+      if: github.event_name == 'pull_request'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        REPO=${{ github.repository }}
+        NOTES=$(git-notes list --json 2>/dev/null || echo '[]')
+        COUNT=$(echo "$NOTES" | python3 -c "
+import sys,json,urllib.request,os
+notes=json.load(sys.stdin)
+token=os.environ.get('GITHUB_TOKEN','')
+posted=0
+for n in notes:
+    if not n.get('file'): continue
+    body=f\"**[git-notes]** {n.get('body','')}\\n\\n*Namespace: {n.get('namespace','comments')} | ID: {n.get('id','')[:8]}*\"
+    payload=json.dumps({'body':body,'path':n['file'],'line':n.get('line_start',1),'side':'RIGHT'}).encode()
+    req=urllib.request.Request(f\"https://api.github.com/repos/{REPO}/pulls/{PR_NUMBER}/comments\",data=payload,headers={'Authorization':f'token {token}','Content-Type':'application/json','Accept':'application/vnd.github+json'})
+    try:
+        urllib.request.urlopen(req)
+        posted+=1
+    except Exception:
+        pass
+print(posted)
+" 2>/dev/null || echo 0)
+        echo "comments_posted=$COUNT" >> $GITHUB_OUTPUT
+        echo "Posted $COUNT PR inline comments"
