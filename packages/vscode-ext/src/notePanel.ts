@@ -41,8 +41,7 @@ export class NotePanel {
                         vscode.commands.executeCommand('git-notes.add', message.text, message.parentId);
                         return;
                     case 'resolve':
-                        vscode.window.showInformationMessage(`Resolve note ${message.noteId}`);
-                        // Add actual resolving logic here if needed
+                        vscode.commands.executeCommand('git-notes.resolve', message.noteId, 'resolved');
                         return;
                 }
             },
@@ -68,16 +67,23 @@ export class NotePanel {
     }
 
     private _getHtmlForWebview(notes: Note[]) {
-        const notesHtml = notes.map(note => `
-            <div class="note" style="margin-bottom: 10px; padding: 10px; border: 1px solid var(--vscode-widget-border);">
-                <div><strong>${note.author}</strong> - ${new Date(note.timestamp).toLocaleString()}</div>
-                <div>${note.body}</div>
-                <div style="margin-top: 5px;">
-                    <button onclick="resolve('${note.id}')">Resolve</button>
-                    <button onclick="reply('${note.id}')">Reply</button>
+        const notesHtml = notes.map(note => {
+            const statusClass = note.status === 'Resolved' || note.status === 'Approved' ? 'color: var(--vscode-charts-green);' : 'color: var(--vscode-charts-yellow);';
+            return `
+            <div class="note" style="margin-bottom: 12px; padding: 12px; border-radius: 6px; background: var(--vscode-editor-background); border: 1px solid var(--vscode-widget-border);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <strong>${note.author}</strong>
+                    <span style="${statusClass} font-size: 11px; font-weight: bold; text-transform: uppercase;">[${note.status}]</span>
+                </div>
+                <div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-bottom: 8px;">${new Date(note.timestamp).toLocaleString()}</div>
+                <div style="line-height: 1.5; white-space: pre-wrap;">${note.body}</div>
+                <div style="margin-top: 10px; display: flex; gap: 8px;">
+                    ${note.status !== 'Resolved' ? `<button style="background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;" onclick="resolve('${note.id}')">✓ Mark Resolved</button>` : ''}
+                    <button style="background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;" onclick="reply('${note.id}')">💬 Reply</button>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         return `<!DOCTYPE html>
             <html lang="en">
@@ -85,14 +91,33 @@ export class NotePanel {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Note Thread</title>
+                <style>
+                    body {
+                        font-family: var(--vscode-font-family);
+                        color: var(--vscode-foreground);
+                        padding: 16px;
+                    }
+                    textarea {
+                        font-family: inherit;
+                        background: var(--vscode-input-background);
+                        color: var(--vscode-input-foreground);
+                        border: 1px solid var(--vscode-input-border);
+                        border-radius: 4px;
+                        padding: 8px;
+                        box-sizing: border-box;
+                    }
+                    button:hover {
+                        opacity: 0.9;
+                    }
+                </style>
             </head>
-            <body style="padding: 10px;">
+            <body>
                 <div id="notes-container">
-                    ${notesHtml}
+                    ${notesHtml || '<div style="color: var(--vscode-descriptionForeground);">No notes found for this line.</div>'}
                 </div>
                 <div style="margin-top: 20px;">
-                    <textarea id="reply-box" style="width: 100%; height: 60px;" placeholder="Add a new reply..."></textarea>
-                    <button style="margin-top: 10px;" onclick="addReply()">Add Reply</button>
+                    <textarea id="reply-box" style="width: 100%; height: 70px;" placeholder="Add a new note / reply..."></textarea>
+                    <button style="margin-top: 8px; background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;" onclick="addReply()">Post Comment</button>
                 </div>
                 <script>
                     const vscode = acquireVsCodeApi();
@@ -100,14 +125,14 @@ export class NotePanel {
                         vscode.postMessage({ command: 'resolve', noteId });
                     }
                     function reply(parentId) {
-                        const text = prompt("Enter your reply:");
+                        const text = prompt("Enter your reply message:");
                         if (text) {
                             vscode.postMessage({ command: 'reply', text, parentId });
                         }
                     }
                     function addReply() {
                         const box = document.getElementById('reply-box');
-                        const text = box.value;
+                        const text = box.value.trim();
                         if (text) {
                             vscode.postMessage({ command: 'reply', text });
                             box.value = '';

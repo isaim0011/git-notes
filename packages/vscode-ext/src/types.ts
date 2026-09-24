@@ -1,11 +1,14 @@
 export interface Note {
     id: string;
-    parent_id?: string;
-    file_path: string;
-    line_number: number;
-    namespace: string;
+    commit: string;
+    file?: string | null;
+    line_start?: number | null;
+    line_end?: number | null;
+    namespace: string | { Custom?: string };
     author: string;
     timestamp: string;
     body: string;
-    status: 'open' | 'resolved';
+    thread_id?: string | null;
+    status: 'Open' | 'Resolved' | 'Approved' | 'Rejected';
+    tags?: string[];
 }

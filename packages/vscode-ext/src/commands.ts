@@ -10,7 +10,7 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
         const binaryPath = vscode.workspace.getConfiguration('git-notes').get<string>('binaryPath', 'git-notes');
         return new Promise((resolve, reject) => {
             exec(`"${binaryPath}" ${args.join(' ')}`, { cwd: workspacePath }, (error, stdout, stderr) => {
-                if (error) reject(error);
+                if (error) reject(new Error(stderr || stdout || error.message));
                 else resolve(stdout.trim());
             });
         });
@@ -49,8 +49,9 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
 
         try {
             const args = ['add', '-f', relPath, '-l', line.toString(), '-m', `"${message}"`, '-n', defaultNamespace];
+            // FIX: CLI uses -t / --thread for parent note ID
             if (parentId) {
-                args.push('-p', parentId);
+                args.push('-t', parentId);
             }
             await runGitNotesCommand(args, workspacePath);
             vscode.window.showInformationMessage('Note added successfully!');
@@ -66,18 +67,24 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
             const stdout = await runGitNotesCommand(['list', '--json'], workspacePath);
             const notes: Note[] = JSON.parse(stdout || '[]');
             
-            const items = notes.map(n => ({
-                label: `[${n.namespace}] ${n.body.substring(0, 50)}`,
-                description: `${n.file_path}:${n.line_number}`,
-                note: n
-            }));
+            const items = notes.map(n => {
+                const nsStr = typeof n.namespace === 'string' ? n.namespace : (n.namespace?.Custom || 'comments');
+                const filePath = n.file || 'unknown';
+                const lineNum = n.line_start || 1;
+                return {
+                    label: `[${nsStr}] ${n.body.substring(0, 50)}`,
+                    description: `${filePath}:${lineNum} by ${n.author}`,
+                    note: n
+                };
+            });
 
             const selected = await vscode.window.showQuickPick(items, { placeHolder: 'Select a note to jump to' });
-            if (selected) {
-                const docUri = vscode.Uri.file(path.join(workspacePath, selected.note.file_path));
+            if (selected && selected.note.file) {
+                const docUri = vscode.Uri.file(path.join(workspacePath, selected.note.file));
                 const doc = await vscode.workspace.openTextDocument(docUri);
                 const editor = await vscode.window.showTextDocument(doc);
-                const pos = new vscode.Position(selected.note.line_number - 1, 0);
+                const lineIndex = Math.max(0, (selected.note.line_start || 1) - 1);
+                const pos = new vscode.Position(lineIndex, 0);
                 editor.selection = new vscode.Selection(pos, pos);
                 editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
             }
@@ -97,7 +104,7 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
                 try {
                     await runGitNotesCommand(['sync', 'auto'], workspacePath);
                 } catch (e) {
-                    // Sync auto might fail if no remote etc, ignore for now
+                    // Sync auto might fail if no remote is configured, ignore
                 }
                 progress.report({ increment: 50, message: "Fetching notes..." });
                 const stdout = await runGitNotesCommand(['list', '--json'], workspacePath);
@@ -105,7 +112,8 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
                 
                 const notesByFile = new Map<string, Note[]>();
                 for (const note of notes) {
-                    const fullPath = path.join(workspacePath, note.file_path);
+                    if (!note.file) continue;
+                    const fullPath = path.join(workspacePath, note.file);
                     if (!notesByFile.has(fullPath)) {
                         notesByFile.set(fullPath, []);
                     }
@@ -122,6 +130,17 @@ export function registerCommands(context: vscode.ExtensionContext, gutterProvide
             });
         } catch (e: any) {
             vscode.window.showErrorMessage(`Sync failed: ${e.message}`);
+        }
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('git-notes.resolve', async (noteId: string, status: string = 'resolved') => {
+        const workspacePath = getActiveWorkspacePath();
+        try {
+            await runGitNotesCommand(['resolve', '-s', status, noteId], workspacePath);
+            vscode.window.showInformationMessage(`Note ${noteId.substring(0, 8)} marked as ${status}`);
+            vscode.commands.executeCommand('git-notes.sync');
+        } catch (e: any) {
+            vscode.window.showErrorMessage(`Failed to resolve note: ${e.message}`);
         }
     }));
 

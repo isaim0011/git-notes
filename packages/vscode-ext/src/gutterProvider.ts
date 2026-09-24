@@ -27,7 +27,8 @@ export class GutterProvider {
         const decorations: vscode.DecorationOptions[] = [];
         
         for (const note of fileNotes) {
-            const line = note.line_number - 1; // 0-indexed in VS Code
+            const lineNum = note.line_start || 1;
+            const line = lineNum - 1; // 0-indexed in VS Code
             if (line >= 0 && line < editor.document.lineCount) {
                 const range = new vscode.Range(line, 0, line, 0);
                 const hoverMessage = new vscode.MarkdownString(`**${note.author}**: ${note.body.substring(0, 100)}${note.body.length > 100 ? '...' : ''}`);
@@ -40,7 +41,7 @@ export class GutterProvider {
 
     public getNotesForLine(file: string, line: number): Note[] {
         const fileNotes = this.fileNotes.get(file) || [];
-        return fileNotes.filter(n => n.line_number === line);
+        return fileNotes.filter(n => (n.line_start || 1) === line);
     }
 
     public dispose() {

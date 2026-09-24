@@ -2,7 +2,7 @@
   "name": "vscode-git-notes",
   "displayName": "git-notes",
   "description": "Decentralized code comments — inline gutter annotations from git notes",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "isaim0011",
   "icon": "icon.png",
   "author": { "name": "Bimo", "email": "git-notes@open-source.dev" },
