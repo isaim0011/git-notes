@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"net/url"
 
 	"github.com/google/go-github/v66/github"
 	"golang.org/x/oauth2"
@@ -36,6 +37,21 @@ func NewClient(token string) *Client {
 	return &Client{
 		gh: github.NewClient(tc),
 	}
+}
+
+func NewClientWithBaseURL(token, baseURL string) (*Client, error) {
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+	c := github.NewClient(tc)
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, err
+	}
+	c.BaseURL = u
+	return &Client{gh: c}, nil
 }
 
 func (c *Client) GetPRComments(ctx context.Context, owner, repo string, prNum int) ([]PRComment, error) {
