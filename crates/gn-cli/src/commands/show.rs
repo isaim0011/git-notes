@@ -4,7 +4,8 @@ use gn_core::NotesEngine;
 
 #[derive(Args)]
 pub struct ShowArgs {
-    /// Note ID prefix
+    /// Note ID, prefix, index number (e.g. 1, 2), or "latest" / "^"
+    #[arg(default_value = "latest")]
     pub id: String,
 
     /// Show entire thread
@@ -20,7 +21,6 @@ pub fn run(args: &ShowArgs) -> Result<()> {
     let engine = NotesEngine::new(".");
     let namespaces = vec!["comments", "review", "todos"];
 
-    let mut found_note = None;
     let mut all_notes = Vec::new();
 
     for ns in &namespaces {
@@ -30,54 +30,71 @@ pub fn run(args: &ShowArgs) -> Result<()> {
         }
     }
 
-    for note in &all_notes {
-        if note.id.to_string().starts_with(&args.id) {
-            found_note = Some(note.clone());
-            break;
-        }
+    if all_notes.is_empty() {
+        println!("No notes found in repository.");
+        return Ok(());
     }
 
-    let note = found_note.ok_or_else(|| anyhow!("Note with ID {} not found", args.id))?;
+    // Resolve note by:
+    // 1. "latest" / "^"
+    // 2. Numerical index ("1", "2", etc.)
+    // 3. UUID prefix match
+    let target = args.id.trim().trim_start_matches('#');
+    let found_note = if target.eq_ignore_ascii_case("latest") || target == "^" {
+        all_notes.last().cloned()
+    } else if let Ok(idx) = target.parse::<usize>() {
+        if idx >= 1 && idx <= all_notes.len() {
+            Some(all_notes[idx - 1].clone())
+        } else {
+            None
+        }
+    } else {
+        all_notes
+            .iter()
+            .find(|n| n.id.to_string().starts_with(target))
+            .cloned()
+    };
+
+    let note = found_note.ok_or_else(|| anyhow!("Note '{}' not found", args.id))?;
 
     if args.json {
         if args.thread {
             let mut thread = vec![note.clone()];
             for n in &all_notes {
-                if let Some(parent) = &n.thread_id {
-                    if parent == &note.id {
-                        thread.push(n.clone());
-                    }
+                if n.thread_id == Some(note.id) {
+                    thread.push(n.clone());
                 }
             }
             println!("{}", serde_json::to_string_pretty(&thread)?);
         } else {
             println!("{}", serde_json::to_string_pretty(&note)?);
         }
-        return Ok(());
-    }
+    } else {
+        println!("\x1b[1;36mNote {}\x1b[0m", note.id);
+        println!("{}", "─".repeat(60));
+        println!("Commit:     {}", note.commit);
+        if let Some(f) = &note.file {
+            let l = note.line_start.unwrap_or(0);
+            println!("File:       {}:{}", f, l);
+        }
+        println!("Author:     {}", note.author);
+        println!("Date:       {}", note.timestamp);
+        println!("Namespace:  {:?}", note.namespace);
+        println!("Status:     {:?}", note.status);
+        println!("\nMessage:\n{}", note.body);
 
-    println!("ID: {}", note.id);
-    println!("Commit: {}", note.commit);
-    println!(
-        "File: {}:{}",
-        note.file.unwrap_or_default(),
-        note.line_start.unwrap_or(0)
-    );
-    println!("Author: {}", note.author);
-    println!("Date: {}", note.timestamp);
-    println!("Status: {:?}", note.status);
-    if let Some(parent) = &note.thread_id {
-        println!("In-Reply-To: {}", parent);
-    }
-    println!("\n{}", note.body);
+        if args.thread {
+            let replies: Vec<&gn_core::note::Note> = all_notes
+                .iter()
+                .filter(|n| n.thread_id == Some(note.id))
+                .collect();
 
-    if args.thread {
-        for n in &all_notes {
-            if let Some(parent) = &n.thread_id {
-                if parent == &note.id {
-                    println!("\n--- Reply: {} ---", n.id);
-                    println!("Author: {} | Date: {}", n.author, n.timestamp);
-                    println!("{}", n.body);
+            if !replies.is_empty() {
+                println!("\n\x1b[1mThread Replies ({}):\x1b[0m", replies.len());
+                println!("{}", "─".repeat(60));
+                for r in replies {
+                    println!("\x1b[36m↳ [{}]\x1b[0m {}:", &r.id.to_string()[..8], r.author);
+                    println!("  {}\n", r.body.trim());
                 }
             }
         }

@@ -13,28 +13,50 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Add a new note
+    /// Add a new note [alias: a]
+    #[command(alias = "a")]
     Add(commands::add::AddArgs),
-    /// Reply to an existing note thread
+
+    /// Reply to an existing note thread [alias: r]
+    #[command(alias = "r")]
     Reply(commands::reply::ReplyArgs),
-    /// List notes
+
+    /// List notes [aliases: l, ls]
+    #[command(alias = "l", alias = "ls")]
     List(commands::list::ListArgs),
-    /// Show a specific note
+
+    /// Show a specific note or thread [alias: s]
+    #[command(alias = "s")]
     Show(commands::show::ShowArgs),
-    /// Sync notes with remote
+
+    /// Sync notes with remote [aliases: push, pull]
+    #[command(alias = "push", alias = "pull")]
     Sync(commands::sync::SyncArgs),
-    /// Resolve a note
+
+    /// Resolve a note [aliases: ok, close]
+    #[command(alias = "ok", alias = "close")]
     Resolve(commands::resolve::ResolveArgs),
-    /// Export notes
+
+    /// Export notes [alias: exp]
+    #[command(alias = "exp")]
     Export(commands::export::ExportArgs),
-    /// Check repository health and configuration
+
+    /// Check repository health and configuration [alias: doc]
+    #[command(alias = "doc")]
     Doctor,
-    /// View git blame with inline notes
+
+    /// View git blame with inline notes [alias: b]
+    #[command(alias = "b")]
     Blame(commands::blame::BlameArgs),
-    /// Import review comments from a GitHub Pull Request
+
+    /// Import review comments from a GitHub Pull Request [alias: pr]
+    #[command(alias = "pr")]
     ImportPr(commands::import_pr::ImportPrArgs),
-    /// AI-powered summary of open discussion threads (Gemini)
+
+    /// AI-powered summary of open discussion threads (Gemini) [alias: sum]
+    #[command(alias = "sum")]
     Summarize(commands::summarize::SummarizeArgs),
+
     /// Generate shell completions
     Completions(commands::completions::CompletionsArgs),
 }

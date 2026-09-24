@@ -5,7 +5,8 @@ use std::process::Command;
 
 #[derive(Args)]
 pub struct ReplyArgs {
-    /// Parent note ID (or prefix) to reply to
+    /// Note ID, index number (1, 2, ...), or "latest" / "^" (defaults to latest)
+    #[arg(default_value = "latest")]
     pub id: String,
 
     /// Reply message
@@ -17,27 +18,38 @@ pub fn run(args: &ReplyArgs) -> Result<()> {
     let engine = NotesEngine::new(".");
     let namespaces = vec!["comments", "review", "todos"];
 
-    let mut found_note = None;
+    let mut all_notes = Vec::new();
 
     for ns in &namespaces {
         let namespace_enum = gn_core::Namespace::Custom(ns.to_string());
         if let Ok(notes) = engine.read_notes(&namespace_enum) {
-            for note in notes {
-                if note.id.to_string().starts_with(&args.id) {
-                    found_note = Some(note.clone());
-                    break;
-                }
-            }
-        }
-        if found_note.is_some() {
-            break;
+            all_notes.extend(notes);
         }
     }
 
-    let parent_note =
-        found_note.ok_or_else(|| anyhow!("Parent note with ID {} not found", args.id))?;
+    if all_notes.is_empty() {
+        return Err(anyhow!("No notes exist in the repository to reply to."));
+    }
 
-    // Get git author name and email
+    let target = args.id.trim().trim_start_matches('#');
+    let found_note = if target.eq_ignore_ascii_case("latest") || target == "^" {
+        all_notes.last().cloned()
+    } else if let Ok(idx) = target.parse::<usize>() {
+        if idx >= 1 && idx <= all_notes.len() {
+            Some(all_notes[idx - 1].clone())
+        } else {
+            None
+        }
+    } else {
+        all_notes
+            .iter()
+            .find(|n| n.id.to_string().starts_with(target))
+            .cloned()
+    };
+
+    let parent_note =
+        found_note.ok_or_else(|| anyhow!("Target note '{}' not found", args.id))?;
+
     let name_output = Command::new("git")
         .args(["config", "user.name"])
         .output()
@@ -53,13 +65,13 @@ pub fn run(args: &ReplyArgs) -> Result<()> {
         String::from_utf8_lossy(&email_output.stdout).trim()
     );
 
-    let reply_note = Note::reply(&parent_note, args.message.clone(), author);
+    let reply = Note::reply(&parent_note, args.message.clone(), author);
 
-    engine.write_note(&reply_note)?;
-
+    let id = engine.write_note(&reply)?;
     println!(
-        "✓ Reply {} added to thread {} in namespace {}",
-        reply_note.id, parent_note.id, parent_note.namespace
+        "\x1b[32m✔\x1b[0m Reply added to thread \x1b[36m{}\x1b[0m (Note ID: \x1b[36m{}\x1b[0m)",
+        &parent_note.id.to_string()[..8],
+        &id[..8.min(id.len())]
     );
 
     Ok(())
