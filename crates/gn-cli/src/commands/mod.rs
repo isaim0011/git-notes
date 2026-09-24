@@ -1,9 +1,12 @@
 pub mod add;
 pub mod blame;
 pub mod completions;
+pub mod diff;
 pub mod doctor;
 pub mod export;
+pub mod hook;
 pub mod import_pr;
+pub mod init;
 pub mod list;
 pub mod picker;
 pub mod reply;
