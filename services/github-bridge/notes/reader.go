@@ -8,7 +8,7 @@ import (
 )
 
 type Note struct {
-	ID        string `json:"id"`
+	ID        string `json:"id,omitempty"`
 	Body      string `json:"body"`
 	File      string `json:"file"`
 	Line      int    `json:"line"`
@@ -59,18 +59,17 @@ func (r *Reader) ReadNotesJSON(namespace string) ([]Note, error) {
 	return notes, nil
 }
 
-func (r *Reader) WriteNote(note Note) error {
-	args := []string{
-		"add",
-		"--file", note.File,
-		"--line", fmt.Sprintf("%d", note.Line),
-		"--message", note.Body,
-	}
-	if note.Namespace != "" {
-		args = append(args, "--namespace", note.Namespace)
+func (r *Reader) WriteNotes(notes []Note) error {
+	if len(notes) == 0 {
+		return nil
 	}
 
-	cmd := exec.Command(r.gnBinary, args...)
+	notesJSON, err := json.Marshal(notes)
+	if err != nil {
+		return fmt.Errorf("failed to marshal notes: %w", err)
+	}
+
+	cmd := exec.Command(r.gnBinary, "add-bulk", "--json", string(notesJSON))
 	cmd.Dir = r.repoPath
 
 	var outb, errb bytes.Buffer
@@ -78,8 +77,12 @@ func (r *Reader) WriteNote(note Note) error {
 	cmd.Stderr = &errb
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("git-notes add failed: %v, stderr: %s", err, errb.String())
+		return fmt.Errorf("git-notes add-bulk failed: %v, stderr: %s", err, errb.String())
 	}
 
 	return nil
+}
+
+func (r *Reader) WriteNote(note Note) error {
+	return r.WriteNotes([]Note{note})
 }

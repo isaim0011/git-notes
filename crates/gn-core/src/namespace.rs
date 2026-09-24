@@ -1,13 +1,37 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::str::FromStr;
 
 /// The three built-in note namespaces. Extensible via `Custom`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(into = "String", try_from = "String")]
 pub enum Namespace {
     Comments,
     Review,
     Todos,
     Custom(String),
+}
+
+impl From<Namespace> for String {
+    fn from(ns: Namespace) -> Self {
+        ns.to_string()
+    }
+}
+
+impl FromStr for Namespace {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self::from_str(s))
+    }
+}
+
+impl TryFrom<String> for Namespace {
+    type Error = std::convert::Infallible;
+
+    fn try_from(s: String) -> Result<Self, Self::Error> {
+        Ok(Self::from_str(&s))
+    }
 }
 
 impl Namespace {

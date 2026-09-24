@@ -15,6 +15,9 @@ struct Cli {
 enum Commands {
     /// Add a new note
     Add(commands::add::AddArgs),
+    /// Add notes in bulk
+    #[command(name = "add-bulk")]
+    AddBulk(commands::add_bulk::AddBulkArgs),
     /// Reply to an existing note thread
     Reply(commands::reply::ReplyArgs),
     /// List notes
@@ -40,6 +43,7 @@ fn main() -> anyhow::Result<()> {
 
     match &cli.command {
         Commands::Add(args) => commands::add::run(args),
+        Commands::AddBulk(args) => commands::add_bulk::run(args),
         Commands::Reply(args) => commands::reply::run(args),
         Commands::List(args) => commands::list::run(args),
         Commands::Show(args) => commands::show::run(args),

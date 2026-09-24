@@ -60,86 +60,110 @@ impl NotesEngine {
     }
 
     pub fn write_note(&self, note: &Note) -> Result<String> {
-        let note_json = serde_json::to_string(note)?;
+        self.write_notes(std::slice::from_ref(note))
+    }
 
-        // 1. Hash object
-        let mut hash_cmd = self.git_cmd();
-        hash_cmd
-            .args(["hash-object", "-w", "--stdin"])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped());
-
-        let mut child = hash_cmd.spawn()?;
-        if let Some(mut stdin) = child.stdin.take() {
-            stdin.write_all(note_json.as_bytes())?;
-        }
-        let hash_output = child.wait_with_output()?;
-        let blob_hash = String::from_utf8(hash_output.stdout)?.trim().to_string();
-
-        let ref_path = note.namespace.ref_path();
-
-        // 2. Read existing tree or create new
-        let tree_cmd = self.git_cmd().args(["ls-tree", &ref_path]).output()?;
-
-        let mut tree_entries = String::new();
-        if tree_cmd.status.success() {
-            tree_entries = String::from_utf8(tree_cmd.stdout)?;
+    pub fn write_notes(&self, notes: &[Note]) -> Result<String> {
+        if notes.is_empty() {
+            return Ok(String::new());
         }
 
-        // Add or update the file named by UUID
-        let new_entry = format!("100644 blob {}\t{}\n", blob_hash, note.id);
+        use std::collections::HashMap;
 
-        // Filter out existing entry for this note id if updating
-        let mut new_tree_input = tree_entries
-            .lines()
-            .filter(|line| !line.ends_with(&note.id.to_string()))
-            .map(|line| format!("{}\n", line))
-            .collect::<String>();
-
-        new_tree_input.push_str(&new_entry);
-
-        // 3. mktree
-        let mut mktree_cmd = self.git_cmd();
-        mktree_cmd
-            .arg("mktree")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped());
-
-        let mut child = mktree_cmd.spawn()?;
-        if let Some(mut stdin) = child.stdin.take() {
-            stdin.write_all(new_tree_input.as_bytes())?;
-        }
-        let mktree_output = child.wait_with_output()?;
-        let new_tree_hash = String::from_utf8(mktree_output.stdout)?.trim().to_string();
-
-        // 4. commit-tree
-        let mut commit_cmd = self.git_cmd();
-        commit_cmd.args([
-            "commit-tree",
-            &new_tree_hash,
-            "-m",
-            &format!("Update note {}", note.id),
-        ]);
-
-        // Find parent commit if ref exists
-        let rev_parse = self
-            .git_cmd()
-            .args(["rev-parse", "-q", "--verify", &ref_path])
-            .output()?;
-        if rev_parse.status.success() {
-            let parent_hash = String::from_utf8(rev_parse.stdout)?.trim().to_string();
-            commit_cmd.args(["-p", &parent_hash]);
+        // Group notes by namespace ref path
+        let mut grouped: HashMap<String, Vec<&Note>> = HashMap::new();
+        for note in notes {
+            grouped.entry(note.namespace.ref_path()).or_default().push(note);
         }
 
-        let commit_output = commit_cmd.output()?;
-        let commit_hash = String::from_utf8(commit_output.stdout)?.trim().to_string();
+        let mut last_commit_hash = String::new();
 
-        // 5. update-ref
-        self.git_cmd()
-            .args(["update-ref", &ref_path, &commit_hash])
-            .output()?;
+        for (ref_path, ns_notes) in grouped {
+            let note_ids: Vec<String> = ns_notes.iter().map(|n| n.id.to_string()).collect();
 
-        Ok(commit_hash)
+            // Hash objects and collect (blob_hash, note_id)
+            let mut entries_to_add = Vec::with_capacity(ns_notes.len());
+            for note in ns_notes {
+                let note_json = serde_json::to_string(note)?;
+                let mut hash_cmd = self.git_cmd();
+                hash_cmd
+                    .args(["hash-object", "-w", "--stdin"])
+                    .stdin(Stdio::piped())
+                    .stdout(Stdio::piped());
+
+                let mut child = hash_cmd.spawn()?;
+                if let Some(mut stdin) = child.stdin.take() {
+                    stdin.write_all(note_json.as_bytes())?;
+                }
+                let hash_output = child.wait_with_output()?;
+                let blob_hash = String::from_utf8(hash_output.stdout)?.trim().to_string();
+                entries_to_add.push((blob_hash, note.id));
+            }
+
+            // Read existing tree
+            let tree_cmd = self.git_cmd().args(["ls-tree", &ref_path]).output()?;
+            let mut tree_entries = String::new();
+            if tree_cmd.status.success() {
+                tree_entries = String::from_utf8(tree_cmd.stdout)?;
+            }
+
+            // Filter out existing entries for notes being added/updated
+            let mut new_tree_input = tree_entries
+                .lines()
+                .filter(|line| !note_ids.iter().any(|id| line.ends_with(id)))
+                .map(|line| format!("{}\n", line))
+                .collect::<String>();
+
+            // Add new entries
+            for (blob_hash, note_id) in entries_to_add {
+                new_tree_input.push_str(&format!("100644 blob {}\t{}\n", blob_hash, note_id));
+            }
+
+            // mktree
+            let mut mktree_cmd = self.git_cmd();
+            mktree_cmd
+                .arg("mktree")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped());
+
+            let mut child = mktree_cmd.spawn()?;
+            if let Some(mut stdin) = child.stdin.take() {
+                stdin.write_all(new_tree_input.as_bytes())?;
+            }
+            let mktree_output = child.wait_with_output()?;
+            let new_tree_hash = String::from_utf8(mktree_output.stdout)?.trim().to_string();
+
+            // commit-tree
+            let mut commit_cmd = self.git_cmd();
+            let commit_msg = if notes.len() == 1 {
+                format!("Update note {}", notes[0].id)
+            } else {
+                format!("Batch update {} notes", notes.len())
+            };
+            commit_cmd.args(["commit-tree", &new_tree_hash, "-m", &commit_msg]);
+
+            // Find parent commit if ref exists
+            let rev_parse = self
+                .git_cmd()
+                .args(["rev-parse", "-q", "--verify", &ref_path])
+                .output()?;
+            if rev_parse.status.success() {
+                let parent_hash = String::from_utf8(rev_parse.stdout)?.trim().to_string();
+                commit_cmd.args(["-p", &parent_hash]);
+            }
+
+            let commit_output = commit_cmd.output()?;
+            let commit_hash = String::from_utf8(commit_output.stdout)?.trim().to_string();
+
+            // update-ref
+            self.git_cmd()
+                .args(["update-ref", &ref_path, &commit_hash])
+                .output()?;
+
+            last_commit_hash = commit_hash;
+        }
+
+        Ok(last_commit_hash)
     }
 
     pub fn delete_note(&self, note_id: Uuid, namespace: &Namespace) -> Result<()> {

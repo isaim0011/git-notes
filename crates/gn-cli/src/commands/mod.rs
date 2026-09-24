@@ -1,4 +1,5 @@
 pub mod add;
+pub mod add_bulk;
 pub mod completions;
 pub mod export;
 pub mod list;

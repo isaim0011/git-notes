@@ -27,13 +27,14 @@ func SyncPRToNotes(ctx context.Context, ghClient *github.Client, notesReader *no
 		existingMap[n.Body] = true
 	}
 
+	var newNotes []notes.Note
 	for _, c := range comments {
 		if c.Path == "" || c.Line == 0 {
 			continue // skip PR level comments without path/line
 		}
 
 		bodyWithMeta := fmt.Sprintf("%s\n\n[github-comment-id: %d]", c.Body, c.ID)
-		
+
 		found := false
 		for _, n := range existingNotes {
 			if strings.Contains(n.Body, fmt.Sprintf("[github-comment-id: %d]", c.ID)) {
@@ -53,8 +54,12 @@ func SyncPRToNotes(ctx context.Context, ghClient *github.Client, notesReader *no
 			Namespace: "review",
 		}
 
-		if err := notesReader.WriteNote(note); err != nil {
-			return fmt.Errorf("failed to write note for comment %d: %w", c.ID, err)
+		newNotes = append(newNotes, note)
+	}
+
+	if len(newNotes) > 0 {
+		if err := notesReader.WriteNotes(newNotes); err != nil {
+			return fmt.Errorf("failed to write notes: %w", err)
 		}
 	}
 
