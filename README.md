@@ -12,7 +12,7 @@ No database. No vendor. No history rewrites. Just `refs/notes/*`.
 [![Crates.io](https://img.shields.io/crates/v/gn-cli?label=crates.io&color=orange)](https://crates.io/crates/gn-cli)
 [![PyPI](https://img.shields.io/pypi/v/git-notes-hooks?label=PyPI&color=blue)](https://pypi.org/project/git-notes-hooks/)
 [![Open VSX](https://img.shields.io/open-vsx/v/isaim0011/vscode-git-notes?color=purple&label=Open%20VSX)](https://open-vsx.org/extension/isaim0011/vscode-git-notes)
-[![GitHub Action](https://img.shields.io/badge/GitHub_Action-Marketplace-2088FF?logo=github-actions&logoColor=white)](https://github.com/marketplace/actions/git-notes-sync)
+[![GitHub Action](https://img.shields.io/badge/GitHub_Action-isaim0011%2Fgit--notes-2088FF?logo=github-actions&logoColor=white)](https://github.com/isaim0011/git-notes/blob/main/action.yml)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](./LICENSE-MIT)
 [![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/isaim0011)
 
@@ -226,7 +226,7 @@ Web Viewer (Vite)  ─┘   └─────┬─────┘           �
 | `gn-core` (Rust library) | [crates.io](https://crates.io/crates/gn-core) | `cargo add gn-core` |
 | `git-notes-hooks` (Python) | [PyPI](https://pypi.org/project/git-notes-hooks/) | `pip install git-notes-hooks` |
 | VS Code Extension | [Open VSX](https://open-vsx.org/extension/isaim0011/vscode-git-notes) | `code --install-extension isaim0011.vscode-git-notes` |
-| GitHub Action | [Marketplace](https://github.com/marketplace/actions/git-notes-sync) | `uses: isaim0011/git-notes@v0.1.0` |
+| GitHub Action | [Action Definition](https://github.com/isaim0011/git-notes/blob/main/action.yml) | `uses: isaim0011/git-notes@main` |
 | Docker (bridge daemon) | [GHCR](https://github.com/isaim0011/git-notes/pkgs/container/github-bridge) | `docker pull ghcr.io/isaim0011/git-notes/github-bridge:latest` |
 
 ---
