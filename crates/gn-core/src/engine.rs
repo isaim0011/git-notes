@@ -34,23 +34,85 @@ impl NotesEngine {
         }
 
         let out_str = String::from_utf8(output.stdout)?;
-        let mut notes = Vec::new();
+        let mut blob_hashes = Vec::new();
 
         for line in out_str.lines() {
             let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() < 4 {
+            if parts.len() >= 4 {
+                blob_hashes.push(parts[2].to_string());
+            }
+        }
+
+        if blob_hashes.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let mut cat_file_cmd = self.git_cmd();
+        cat_file_cmd
+            .args(["cat-file", "--batch"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped());
+
+        let mut child = cat_file_cmd.spawn()?;
+        if let Some(mut stdin) = child.stdin.take() {
+            std::thread::spawn(move || {
+                for hash in blob_hashes {
+                    if writeln!(stdin, "{}", hash).is_err() {
+                        break;
+                    }
+                }
+            });
+        }
+
+        let cat_file_output = child.wait_with_output()?;
+        if !cat_file_output.status.success() {
+            return Ok(Vec::new());
+        }
+
+        let mut notes = Vec::new();
+        let stdout = cat_file_output.stdout;
+        let mut cursor = 0;
+
+        while cursor < stdout.len() {
+            // Find end of header line
+            let relative_newline = match stdout[cursor..].iter().position(|&b| b == b'\n') {
+                Some(pos) => pos,
+                None => break,
+            };
+
+            let header_line = match std::str::from_utf8(&stdout[cursor..cursor + relative_newline])
+            {
+                Ok(s) => s.trim(),
+                Err(_) => break,
+            };
+
+            cursor += relative_newline + 1;
+
+            let parts: Vec<&str> = header_line.split_whitespace().collect();
+            if parts.len() < 3 {
+                // If it's missing (e.g., "<hash> missing"), no payload bytes follow
                 continue;
             }
-            let blob_hash = parts[2];
 
-            let cat_file = self
-                .git_cmd()
-                .args(["cat-file", "blob", blob_hash])
-                .output()?;
+            let size: usize = match parts[2].parse() {
+                Ok(s) => s,
+                Err(_) => break,
+            };
 
-            if cat_file.status.success() {
-                let blob_str = String::from_utf8(cat_file.stdout)?;
-                if let Ok(note) = serde_json::from_str::<Note>(&blob_str) {
+            if cursor + size > stdout.len() {
+                break;
+            }
+
+            let blob_data = &stdout[cursor..cursor + size];
+            cursor += size;
+
+            // Consume trailing newline after payload if present
+            if cursor < stdout.len() && stdout[cursor] == b'\n' {
+                cursor += 1;
+            }
+
+            if let Ok(blob_str) = std::str::from_utf8(blob_data) {
+                if let Ok(note) = serde_json::from_str::<Note>(blob_str) {
                     notes.push(note);
                 }
             }

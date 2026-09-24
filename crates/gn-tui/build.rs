@@ -2,7 +2,10 @@
 fn main() {
     let mut res = winres::WindowsResource::new();
     res.set("CompanyName", "Bimo");
-    res.set("FileDescription", "git-notes TUI — browse code hunks and comment threads");
+    res.set(
+        "FileDescription",
+        "git-notes TUI — browse code hunks and comment threads",
+    );
     res.set("LegalCopyright", "Copyright (C) 2026 Bimo");
     res.set("ProductName", "git-notes-tui");
     res.set("OriginalFilename", "git-notes-tui.exe");
