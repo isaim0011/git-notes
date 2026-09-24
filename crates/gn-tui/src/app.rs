@@ -1,6 +1,7 @@
 use anyhow::Result;
 use crossterm::event::{KeyCode, KeyEvent};
 use gn_core::{Note, NotesEngine};
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 pub enum AppMode {
@@ -20,6 +21,7 @@ pub struct App {
     pub file_tree: Vec<FileEntry>,
     pub selected_file: Option<usize>,
     pub notes: Vec<Note>,
+    pub notes_by_file: HashMap<String, Vec<Note>>,
     pub selected_note: Option<usize>,
     pub input_buffer: String,
     pub repo_path: PathBuf,
@@ -32,10 +34,31 @@ impl App {
             file_tree: Vec::new(),
             selected_file: None,
             notes: Vec::new(),
+            notes_by_file: HashMap::new(),
             selected_note: None,
             input_buffer: String::new(),
             repo_path,
         })
+    }
+
+    #[allow(dead_code)]
+    pub fn set_notes(&mut self, notes: Vec<Note>) {
+        self.notes = notes;
+        self.rebuild_notes_by_file();
+    }
+
+    #[allow(dead_code)]
+    pub fn rebuild_notes_by_file(&mut self) {
+        let mut notes_by_file: HashMap<String, Vec<Note>> = HashMap::new();
+        for note in &self.notes {
+            if let Some(file) = &note.file {
+                notes_by_file
+                    .entry(file.clone())
+                    .or_default()
+                    .push(note.clone());
+            }
+        }
+        self.notes_by_file = notes_by_file;
     }
 
     pub fn load_notes(&mut self) -> Result<()> {
@@ -51,11 +74,15 @@ impl App {
         }
 
         // Group by file
-        let mut file_counts: std::collections::HashMap<String, usize> =
-            std::collections::HashMap::new();
+        let mut file_counts: HashMap<String, usize> = HashMap::new();
+        let mut notes_by_file: HashMap<String, Vec<Note>> = HashMap::new();
         for note in &all_notes {
             if let Some(file) = &note.file {
                 *file_counts.entry(file.clone()).or_insert(0) += 1;
+                notes_by_file
+                    .entry(file.clone())
+                    .or_default()
+                    .push(note.clone());
             }
         }
 
@@ -70,6 +97,7 @@ impl App {
         }
 
         self.notes = all_notes;
+        self.notes_by_file = notes_by_file;
 
         Ok(())
     }
@@ -161,14 +189,73 @@ impl App {
     pub fn current_file_notes(&self) -> Vec<Note> {
         if let Some(idx) = self.selected_file {
             if let Some(entry) = self.file_tree.get(idx) {
-                return self
-                    .notes
-                    .iter()
-                    .filter(|n| n.file.as_deref() == Some(entry.path.as_str()))
-                    .cloned()
-                    .collect();
+                if let Some(notes) = self.notes_by_file.get(&entry.path) {
+                    return notes.clone();
+                }
             }
         }
         Vec::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use gn_core::Namespace;
+
+    #[test]
+    fn test_current_file_notes_indexed() {
+        let mut app = App::new(PathBuf::from(".")).unwrap();
+        app.file_tree = vec![
+            FileEntry {
+                path: "src/main.rs".to_string(),
+                note_count: 2,
+            },
+            FileEntry {
+                path: "src/lib.rs".to_string(),
+                note_count: 1,
+            },
+        ];
+        app.selected_file = Some(0);
+
+        let note1 = Note::new(
+            "sha1".to_string(),
+            Some("src/main.rs".to_string()),
+            Some(1),
+            Some(5),
+            "Note 1".to_string(),
+            "Author".to_string(),
+            Namespace::Custom("comments".to_string()),
+        );
+        let note2 = Note::new(
+            "sha1".to_string(),
+            Some("src/main.rs".to_string()),
+            Some(10),
+            Some(15),
+            "Note 2".to_string(),
+            "Author".to_string(),
+            Namespace::Custom("comments".to_string()),
+        );
+        let note3 = Note::new(
+            "sha1".to_string(),
+            Some("src/lib.rs".to_string()),
+            Some(2),
+            Some(4),
+            "Note 3".to_string(),
+            "Author".to_string(),
+            Namespace::Custom("comments".to_string()),
+        );
+
+        app.set_notes(vec![note1.clone(), note2.clone(), note3.clone()]);
+
+        let main_notes = app.current_file_notes();
+        assert_eq!(main_notes.len(), 2);
+        assert_eq!(main_notes[0].body, "Note 1");
+        assert_eq!(main_notes[1].body, "Note 2");
+
+        app.selected_file = Some(1);
+        let lib_notes = app.current_file_notes();
+        assert_eq!(lib_notes.len(), 1);
+        assert_eq!(lib_notes[0].body, "Note 3");
     }
 }
