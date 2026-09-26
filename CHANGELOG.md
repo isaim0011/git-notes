@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.9] - 2026-09-26
+
+### Added
+- **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**:
+  - Adds single-command automated gating for CI/CD pipelines (`--min-approvals <N>`, `--no-unresolved`, `--namespace`, `--commit`).
+  - Fails cleanly with exit code `1` and a color-coded breakdown of blocking notes or insufficient approvals.
+  - Supports `--json` for automated reporting in GitHub Actions, GitLab CI, and scripts.
+- **Cryptographic Note Signing & Verification (`gn a --sign` / `gn verify`)**:
+  - Adds `--sign` / `-s` to `gn add` and `gn reply`, generating detached OpenPGP / SSH signatures via `git config user.signingkey`.
+  - Canonical newline-delimited payload serialization preserving backward compatibility across all Git objects.
+  - Adds `gn verify` (`sig`) to cryptographically audit note authenticity with `[✔ Signed]`, `[⚠ Unsigned]`, or `[✗ Bad Signature]` badges.
+- **Shell Auto-Completions with 1-Click Install (`gn completions --install`)**:
+  - Supports Bash, Zsh, Fish, PowerShell, and Elvish completions for both `git-notes` and short binary `gn`.
+  - Auto-detects the host shell and installs directly into shell profiles or completion directories.
+
+---
+
 ## [0.1.8] - 2026-09-24
 
 ### Added

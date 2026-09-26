@@ -1,6 +1,6 @@
 {
   "name": "git-notes",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": "Bimo",
   "manifest_version": 3,
   "description": "Render git-notes inline in GitHub PR diffs",

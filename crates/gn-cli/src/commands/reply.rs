@@ -11,6 +11,10 @@ pub struct ReplyArgs {
     /// Reply message
     #[arg(short, long)]
     pub message: String,
+
+    /// Cryptographically sign the reply note with GPG or SSH key
+    #[arg(short, long)]
+    pub sign: bool,
 }
 
 pub fn run(args: &ReplyArgs) -> Result<()> {
@@ -76,14 +80,29 @@ pub fn run(args: &ReplyArgs) -> Result<()> {
         String::from_utf8_lossy(&email_output.stdout).trim()
     );
 
-    let reply = Note::reply(&parent_note, args.message.clone(), author);
+    let mut reply = Note::reply(&parent_note, args.message.clone(), author);
+
+    if super::signing::is_signing_requested(args.sign) {
+        let payload = reply.signing_payload();
+        let sig = super::signing::sign_payload(&payload)
+            .context("Failed to cryptographically sign reply note")?;
+        reply.signature = Some(sig);
+    }
 
     let id = engine.write_note(&reply)?;
-    println!(
-        "\x1b[32m✔\x1b[0m Reply added to thread \x1b[36m{}\x1b[0m (Note ID: \x1b[36m{}\x1b[0m)",
-        &parent_note.id.to_string()[..8],
-        &id[..8.min(id.len())]
-    );
+    if reply.signature.is_some() {
+        println!(
+            "\x1b[32m✔\x1b[0m Reply (signed) added to thread \x1b[36m{}\x1b[0m (Note ID: \x1b[36m{}\x1b[0m)",
+            &parent_note.id.to_string()[..8],
+            &id[..8.min(id.len())]
+        );
+    } else {
+        println!(
+            "\x1b[32m✔\x1b[0m Reply added to thread \x1b[36m{}\x1b[0m (Note ID: \x1b[36m{}\x1b[0m)",
+            &parent_note.id.to_string()[..8],
+            &id[..8.min(id.len())]
+        );
+    }
 
     Ok(())
 }

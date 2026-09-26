@@ -1,5 +1,6 @@
 pub mod add;
 pub mod blame;
+pub mod check;
 pub mod completions;
 pub mod diff;
 pub mod doctor;
@@ -16,5 +17,7 @@ pub mod reply;
 pub mod resolve;
 pub mod shortcuts;
 pub mod show;
+pub mod signing;
 pub mod summarize;
 pub mod sync;
+pub mod verify;

@@ -24,6 +24,10 @@ pub struct AddArgs {
     /// Thread parent note ID (for replies)
     #[arg(short, long)]
     pub thread: Option<String>,
+
+    /// Cryptographically sign the note with GPG or SSH key
+    #[arg(short, long)]
+    pub sign: bool,
 }
 
 pub fn run(args: &AddArgs) -> Result<()> {
@@ -83,10 +87,21 @@ pub fn run(args: &AddArgs) -> Result<()> {
         }
     }
 
+    if super::signing::is_signing_requested(args.sign) {
+        let payload = note.signing_payload();
+        let sig = super::signing::sign_payload(&payload)
+            .context("Failed to cryptographically sign note")?;
+        note.signature = Some(sig);
+    }
+
     let engine = NotesEngine::new(".");
     engine.write_note(&note)?;
 
-    println!("✓ Note {} added to refs/notes/{}", note.id, args.namespace);
+    if note.signature.is_some() {
+        println!("✓ Note {} (signed) added to refs/notes/{}", note.id, args.namespace);
+    } else {
+        println!("✓ Note {} added to refs/notes/{}", note.id, args.namespace);
+    }
 
     Ok(())
 }

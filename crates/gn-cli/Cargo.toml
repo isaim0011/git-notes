@@ -20,8 +20,8 @@ name = "gn"
 path = "src/bin/gn.rs"
 
 [dependencies]
-gn-core     = { version = "0.1.8", path = "../gn-core" }
-gn-sync     = { version = "0.1.8", path = "../gn-sync" }
+gn-core     = { version = "0.1.9", path = "../gn-core" }
+gn-sync     = { version = "0.1.9", path = "../gn-sync" }
 clap        = { workspace = true, features = ["derive"] }
 clap_complete = { workspace = true }
 chrono      = { workspace = true }

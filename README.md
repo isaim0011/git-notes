@@ -122,6 +122,12 @@ gn push && gn pull
 
 # 13. Get an AI summary of open threads before a release (Gemini)
 gn sum --namespace review
+
+# 14. CI quality gating & merge-readiness check
+gn check --min-approvals 1 --no-unresolved  # Or alias: gn verify / gn gate
+
+# 15. Shell completions (auto-install to profile/directory)
+gn completions --install
 ```
 
 ---

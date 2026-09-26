@@ -25,6 +25,8 @@ pub struct Note {
     pub thread_id: Option<Uuid>, // for replies — parent note id
     pub status: NoteStatus,
     pub tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signature: Option<String>,
 }
 
 impl Note {
@@ -51,6 +53,7 @@ impl Note {
             thread_id: None,
             status: NoteStatus::Open,
             tags: Vec::new(),
+            signature: None,
         }
     }
 
@@ -68,7 +71,22 @@ impl Note {
             thread_id: Some(parent.id),
             status: NoteStatus::Open,
             tags: Vec::new(),
+            signature: None,
         }
+    }
+
+    /// Canonical payload string to sign and verify
+    pub fn signing_payload(&self) -> String {
+        format!(
+            "id: {}\ncommit: {}\nfile: {}\nline_start: {}\nbody: {}\nauthor: {}\ntimestamp: {}\n",
+            self.id,
+            self.commit,
+            self.file.as_deref().unwrap_or(""),
+            self.line_start.map(|l| l.to_string()).unwrap_or_default(),
+            self.body,
+            self.author,
+            self.timestamp.to_rfc3339()
+        )
     }
 }
 
@@ -162,5 +180,39 @@ mod tests {
         assert_eq!(reply.author, reply_author);
         assert_eq!(reply.status, NoteStatus::Open);
         assert!(reply.tags.is_empty());
+        assert_eq!(reply.signature, None);
+    }
+
+    #[test]
+    fn test_signing_payload_and_serde() {
+        let note = Note::new(
+            "a1b2c3d4e5f6".to_string(),
+            Some("src/lib.rs".to_string()),
+            Some(1),
+            Some(5),
+            "Parent note".to_string(),
+            "Parent Author <parent@example.com>".to_string(),
+            Namespace::Comments,
+        );
+
+        let payload = note.signing_payload();
+        assert!(payload.contains(&format!("id: {}", note.id)));
+        assert!(payload.contains("commit: a1b2c3d4e5f6"));
+        assert!(payload.contains("file: src/lib.rs"));
+        assert!(payload.contains("body: Parent note"));
+
+        // Check serde backward compatibility (JSON without signature deserializes with None)
+        let json = serde_json::to_string(&note).unwrap();
+        assert!(!json.contains("signature"));
+
+        let mut deserialized: Note = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.signature, None);
+
+        // Deserializing with signature
+        deserialized.signature = Some("-----BEGIN SSH SIGNATURE-----\ntest\n-----END SSH SIGNATURE-----".to_string());
+        let signed_json = serde_json::to_string(&deserialized).unwrap();
+        assert!(signed_json.contains("signature"));
+        let from_signed: Note = serde_json::from_str(&signed_json).unwrap();
+        assert_eq!(from_signed.signature, deserialized.signature);
     }
 }

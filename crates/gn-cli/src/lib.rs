@@ -82,6 +82,14 @@ pub enum Commands {
     /// Automatically re-anchor notes after a git rebase, amend, or cherry-pick [alias: heal]
     #[command(alias = "heal")]
     RebaseHeal(commands::rebase_heal::RebaseHealArgs),
+
+    /// CI quality gating and merge-readiness check [alias: gate]
+    #[command(alias = "gate")]
+    Check(commands::check::CheckArgs),
+
+    /// Verify cryptographic signatures of notes [alias: sig]
+    #[command(alias = "sig")]
+    Verify(commands::verify::VerifyArgs),
 }
 
 pub fn run_cli() -> anyhow::Result<()> {
@@ -160,6 +168,14 @@ pub fn run_cli() -> anyhow::Result<()> {
         Commands::RebaseHeal(args) => {
             profile.record_interaction("rebase-heal", None, args.namespace.as_deref());
             commands::rebase_heal::run(args)
+        }
+        Commands::Check(args) => {
+            profile.record_interaction("check", None, args.namespace.as_deref());
+            commands::check::run(args)
+        }
+        Commands::Verify(args) => {
+            profile.record_interaction("verify", None, args.namespace.as_deref());
+            commands::verify::run(args)
         }
         Commands::Completions(args) => commands::completions::run(args),
     };

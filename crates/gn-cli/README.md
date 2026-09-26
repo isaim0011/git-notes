@@ -60,8 +60,51 @@ Save keystrokes with fast, ergonomic quickies:
 - `gn b -f file.rs` — Blame with inline notes annotations
 - `gn doc` — Doctor health check & stale-note detector
 - `gn heal` — Auto-heal & re-anchor notes after git rebase / amend
-- `gn sync --p2p` — Spin up local Wi-Fi P2P sync server
+- `gn check` / `gn gate` — CI quality gating and merge-readiness check
+- `gn verify` / `gn sig` — Verify cryptographic signatures of notes
+- `gn sum` — AI summary of open discussion threads (Gemini)
+- `gn i` — 1-second repo setup (tracking refspec + hooks)
+- `gn p2p` — Spin up local Wi-Fi P2P sync server
 - `gn imp <gitlab|bitbucket|jira|pr>` — Import reviews from any platform
+
+### Cryptographic Note Signing & Verification (`gn add -s`, `gn verify`)
+Cryptographically sign notes with GPG or SSH keys for provenance and tamper detection:
+```bash
+# Sign a new note with default or configured signing key
+gn add -f src/main.rs -l 42 -m "LGTM, verified security constraints" --sign
+
+# Cryptographically sign a reply
+gn reply 1 -m "Approved fixes" -s
+
+# Verify signatures across all notes with color badges ([✔ Signed], [⚠ Unsigned], [✗ Bad Signature])
+gn verify --all
+
+# Verify a specific note thread or note index
+gn verify 1
+```
+
+### CI Quality Gating & Readiness (`gn check`, `gn gate`)
+Ensure notes and code reviews are satisfied before merging:
+```bash
+# Verify at least 1 Approved review note and zero unresolved threads
+gn check --min-approvals 1 --no-unresolved
+
+# Or using alias:
+gn gate --json
+```
+
+### Shell Auto-Completions (`gn completions`)
+Generate or automatically install tab completions for `bash`, `zsh`, `fish`, `powershell`, or `elvish`:
+```bash
+# Automatically detect shell and install completions into profile/completions directory
+gn completions --install
+
+# Or generate completion script directly:
+gn completions zsh > ~/.zsh/completions/_gn
+gn completions bash > ~/.bash_completion.d/gn
+gn completions fish > ~/.config/fish/completions/gn.fish
+gn completions powershell >> $PROFILE
+```
 
 ### View & Customize Shortcuts
 ```bash
