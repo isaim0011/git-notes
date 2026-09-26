@@ -12,7 +12,7 @@
     "url": "https://github.com/isaim0011/git-notes"
   },
   "engines": { "vscode": "^1.90.0" },
-  "categories": ["SCM Providers", "Collaboration"],
+  "categories": ["SCM Providers", "Other"],
   "keywords": [
     "git",
     "notes",

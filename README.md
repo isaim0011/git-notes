@@ -11,6 +11,7 @@ No database. No vendor. No history rewrites. Just `refs/notes/*`.
 [![Release](https://img.shields.io/github/v/release/isaim0011/git-notes?color=brightgreen&label=Release)](https://github.com/isaim0011/git-notes/releases)
 [![Crates.io](https://img.shields.io/crates/v/gn-cli?label=crates.io&color=orange)](https://crates.io/crates/gn-cli)
 [![PyPI](https://img.shields.io/pypi/v/git-notes-hooks?label=PyPI&color=blue)](https://pypi.org/project/git-notes-hooks/)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/isaim0011.vscode-git-notes?color=blue&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=isaim0011.vscode-git-notes)
 [![Open VSX](https://img.shields.io/open-vsx/v/isaim0011/vscode-git-notes?color=purple&label=Open%20VSX)](https://open-vsx.org/extension/isaim0011/vscode-git-notes)
 [![GitHub Action](https://img.shields.io/badge/GitHub_Action-isaim0011%2Fgit--notes-2088FF?logo=github-actions&logoColor=white)](https://github.com/isaim0011/git-notes/blob/main/action.yml)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](./LICENSE-MIT)
