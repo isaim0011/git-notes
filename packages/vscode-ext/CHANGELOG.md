@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.10] - 2026-09-26
+
+### Added
+- **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**: Single-command automated merge validation with `--min-approvals <N>` and `--no-unresolved`.
+- **Cryptographic Note Verification (`gn a --sign` / `gn verify`)**: GPG & SSH signature support for authentic, tamper-proof reviews in Git.
+- **Shell Auto-Completions with 1-Click Install (`gn completions --install`)**: Zero-config auto-detection and installation for Bash, Zsh, Fish, PowerShell, and Elvish.
+- **VS Code & Cursor IDE Synchronization**: Updated live extension bundle with synchronized CHANGELOG and enhanced gutter performance.
+
+---
+
 ## [0.1.9] - 2026-09-26
 
 ### Added
