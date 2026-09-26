@@ -180,8 +180,17 @@ pub fn run_cli() -> anyhow::Result<()> {
         Commands::Completions(args) => commands::completions::run(args),
     };
 
-    if let Some(tip) = profile.suggest_next_action(None) {
-        println!("{}", tip);
+    let is_json = match &cli.command {
+        Commands::List(a) => a.json,
+        Commands::Check(a) => a.json,
+        Commands::Show(a) => a.json,
+        _ => false,
+    };
+
+    if !is_json {
+        if let Some(tip) = profile.suggest_next_action(None) {
+            println!("{}", tip);
+        }
     }
 
     result

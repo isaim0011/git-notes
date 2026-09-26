@@ -7,13 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.1.10] - 2026-09-26
+## [0.1.10] - 2026-09-27
 
 ### Added
 - **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**: Single-command automated merge validation with `--min-approvals <N>` and `--no-unresolved`.
 - **Cryptographic Note Verification (`gn a --sign` / `gn verify`)**: GPG & SSH signature support for authentic, tamper-proof reviews in Git.
 - **Shell Auto-Completions with 1-Click Install (`gn completions --install`)**: Zero-config auto-detection and installation for Bash, Zsh, Fish, PowerShell, and Elvish.
-- **VS Code & Cursor IDE Synchronization**: Updated live extension bundle with synchronized CHANGELOG and enhanced gutter performance.
+- **12-Stage Real-World Multi-Node Burden Test Suite (`burden_test.py`)**: End-to-end multi-developer simulation enforcing zero regressions across all core features.
+
+### Fixed
+- **Clean Machine JSON Output**: Suppressed plain-text interactive workflow suggestions when `--json` flags are passed (`gn list --json`, `gn check --json`), ensuring 100% compliant JSON parsing for CI/CD runners and external tooling.
 
 ---
 
