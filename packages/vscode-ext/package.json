@@ -2,7 +2,7 @@
   "name": "vscode-git-notes",
   "displayName": "git-notes",
   "description": "Decentralized code comments, review discussions, and GitHub notes inline inside VS Code, Cursor, and Windsurf IDEs",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "publisher": "isaim0011",
   "icon": "icon.png",
   "author": { "name": "Bimo", "email": "i.s41m0011@gmail.com" },
