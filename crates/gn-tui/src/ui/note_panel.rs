@@ -4,7 +4,7 @@ use ratatui::{
     layout::Rect,
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph},
+    widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
 };
 
@@ -141,8 +141,11 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                 }
             }
 
-            // Divider between note cards
-            text.push(Line::from(""));
+            // Clean subtle divider between note cards
+            text.push(Line::from(Span::styled(
+                "  ────────────────────────────────────────────",
+                Style::default().fg(if is_selected { Color::Rgb(60, 80, 120) } else { Color::Rgb(30, 35, 45) }),
+            )));
         }
     }
 
@@ -160,10 +163,11 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
     let p = Paragraph::new(text)
         .block(
             Block::default()
-                .title(" Review & Notes ")
+                .title(" Review & Discussion Notes ")
                 .borders(Borders::ALL)
                 .border_style(border_style),
         )
+        .wrap(Wrap { trim: false })
         .scroll((app.note_scroll, 0));
 
     f.render_widget(p, area);

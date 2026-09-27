@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.13] - 2026-09-27
+
+### Added
+- **Asynchronous Decoupled Task Queue (`AsyncRunner`)**: All git operations and CLI subprocess calls are now processed asynchronously with queued scheduling and debouncing, ensuring 100% fluid editor performance with zero UI thread freezes during high-frequency saving or rapid git activity.
+- **Automated CLI Binary Installer**: Automatically detects missing `git-notes` / `gn` binaries on the user's host system and securely downloads the verified native binary for Windows, macOS (Apple Silicon & Intel), or Linux in 1 click without requiring Cargo or Rust toolchains.
+- **Interactive Onboarding Walkthrough**: Rich built-in VS Code walkthrough (`contributes.walkthroughs`) guiding new developers step-by-step through repository initialization, inline gutter notes (`Alt+N`), webview discussion threads (`Alt+Shift+N`), and rebase-healing.
+- **Data & Refspec Integrity Validator (`gn validate` / `gn fsck`)**: Audits all `refs/notes/*`, validates JSON schemas and Git commit DAG anchors, detecting and preventing any reference drift or corruption.
+- **Modernized Interactive TUI (`git-notes-tui`)**:
+  - Live cursor tracking with bright `▶` indicators and background line highlights in the code diff view.
+  - Expanded Review & Notes panel to 40% width with clean word-wrapping to prevent border clipping.
+  - Keyboard navigation synced between file tree, diff, and note threads.
+
+---
+
 ## [0.1.11] - 2026-09-27
 
 ### Added

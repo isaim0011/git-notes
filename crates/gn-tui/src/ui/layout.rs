@@ -19,18 +19,18 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         Layout::default()
             .direction(Direction::Horizontal)
             .constraints([
-                Constraint::Percentage(20),
-                Constraint::Percentage(55),
-                Constraint::Percentage(25),
+                Constraint::Percentage(18),
+                Constraint::Percentage(42),
+                Constraint::Percentage(40),
             ])
             .split(main_chunks[0])
     } else {
         Layout::default()
             .direction(Direction::Horizontal)
             .constraints([
-                Constraint::Percentage(20),
-                Constraint::Percentage(55),
-                Constraint::Percentage(25),
+                Constraint::Percentage(18),
+                Constraint::Percentage(42),
+                Constraint::Percentage(40),
             ])
             .split(f.size())
     };

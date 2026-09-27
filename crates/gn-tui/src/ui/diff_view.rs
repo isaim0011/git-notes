@@ -72,13 +72,20 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                         (" ", Style::default().fg(Color::DarkGray))
                     };
 
-                    let line_num_style = if has_note {
+                    let is_cursor_line = is_focused && idx == app.selected_diff_line;
+
+                    let line_num_style = if is_cursor_line {
+                        Style::default().fg(Color::Black).bg(Color::Yellow).add_modifier(Modifier::BOLD)
+                    } else if has_note {
                         Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
                     } else {
                         Style::default().fg(Color::DarkGray)
                     };
 
+                    let cursor_prefix = if is_cursor_line { "▶ " } else { "  " };
+
                     let mut spans = vec![
+                        Span::styled(cursor_prefix, if is_cursor_line { Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD) } else { Style::default() }),
                         Span::styled(format!("{} ", gutter_bullet), gutter_style),
                         Span::styled(format!("{:>4} │ ", line_num), line_num_style),
                     ];
@@ -91,10 +98,20 @@ pub fn draw(f: &mut Frame, app: &App, area: Rect) {
                                 style.foreground.g,
                                 style.foreground.b,
                             );
-                            spans.push(Span::styled(text.to_string(), Style::default().fg(fg_color)));
+                            let text_style = if is_cursor_line {
+                                Style::default().fg(fg_color).bg(Color::Rgb(35, 45, 65)).add_modifier(Modifier::BOLD)
+                            } else {
+                                Style::default().fg(fg_color)
+                            };
+                            spans.push(Span::styled(text.to_string(), text_style));
                         }
                     } else {
-                        spans.push(Span::raw(raw_line.to_string()));
+                        let text_style = if is_cursor_line {
+                            Style::default().bg(Color::Rgb(35, 45, 65))
+                        } else {
+                            Style::default()
+                        };
+                        spans.push(Span::styled(raw_line.to_string(), text_style));
                     }
 
                     lines_rendered.push(Line::from(spans));

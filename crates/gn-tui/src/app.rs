@@ -26,6 +26,8 @@ pub struct App {
     pub input_buffer: String,
     pub repo_path: PathBuf,
     pub diff_scroll: u16,
+    pub selected_diff_line: usize,
+    pub total_diff_lines: usize,
     pub note_scroll: u16,
 }
 
@@ -41,6 +43,8 @@ impl App {
             input_buffer: String::new(),
             repo_path,
             diff_scroll: 0,
+            selected_diff_line: 0,
+            total_diff_lines: 0,
             note_scroll: 0,
         })
     }
@@ -102,8 +106,22 @@ impl App {
 
         self.notes = all_notes;
         self.notes_by_file = notes_by_file;
+        self.update_current_file_lines();
 
         Ok(())
+    }
+
+    pub fn update_current_file_lines(&mut self) {
+        if let Some(idx) = self.selected_file {
+            if let Some(entry) = self.file_tree.get(idx) {
+                let full_path = self.repo_path.join(&entry.path);
+                if let Ok(content) = std::fs::read_to_string(&full_path) {
+                    self.total_diff_lines = content.lines().count();
+                    return;
+                }
+            }
+        }
+        self.total_diff_lines = 0;
     }
 
     pub fn handle_key(&mut self, key: KeyEvent) -> bool {
@@ -115,7 +133,9 @@ impl App {
                         if i < self.file_tree.len().saturating_sub(1) {
                             self.selected_file = Some(i + 1);
                             self.diff_scroll = 0;
+                            self.selected_diff_line = 0;
                             self.note_scroll = 0;
+                            self.update_current_file_lines();
                         }
                     }
                 }
@@ -124,22 +144,35 @@ impl App {
                         if i > 0 {
                             self.selected_file = Some(i - 1);
                             self.diff_scroll = 0;
+                            self.selected_diff_line = 0;
                             self.note_scroll = 0;
+                            self.update_current_file_lines();
                         }
                     }
                 }
                 KeyCode::Right | KeyCode::Enter => {
                     self.mode = AppMode::DiffView;
+                    self.update_current_file_lines();
                 }
                 _ => {}
             },
             AppMode::DiffView => match key.code {
                 KeyCode::Char('q') | KeyCode::Left => self.mode = AppMode::FileTree,
                 KeyCode::Down | KeyCode::Char('j') => {
-                    self.diff_scroll = self.diff_scroll.saturating_add(1);
+                    if self.total_diff_lines > 0 && self.selected_diff_line < self.total_diff_lines.saturating_sub(1) {
+                        self.selected_diff_line += 1;
+                        if (self.selected_diff_line as u16) >= self.diff_scroll.saturating_add(20) {
+                            self.diff_scroll = self.diff_scroll.saturating_add(1);
+                        }
+                    }
                 }
                 KeyCode::Up | KeyCode::Char('k') => {
-                    self.diff_scroll = self.diff_scroll.saturating_sub(1);
+                    if self.selected_diff_line > 0 {
+                        self.selected_diff_line -= 1;
+                        if (self.selected_diff_line as u16) < self.diff_scroll {
+                            self.diff_scroll = self.diff_scroll.saturating_sub(1);
+                        }
+                    }
                 }
                 KeyCode::Right | KeyCode::Enter => {
                     self.mode = AppMode::NotePanel;
@@ -152,16 +185,17 @@ impl App {
             AppMode::NotePanel => match key.code {
                 KeyCode::Char('q') | KeyCode::Left => {
                     self.mode = AppMode::DiffView;
-                    self.selected_note = None;
                 }
-                KeyCode::Down => {
+                KeyCode::Down | KeyCode::Char('j') => {
                     if let Some(i) = self.selected_note {
                         if i < self.current_file_notes().len().saturating_sub(1) {
                             self.selected_note = Some(i + 1);
                         }
+                    } else if !self.current_file_notes().is_empty() {
+                        self.selected_note = Some(0);
                     }
                 }
-                KeyCode::Up => {
+                KeyCode::Up | KeyCode::Char('k') => {
                     if let Some(i) = self.selected_note {
                         if i > 0 {
                             self.selected_note = Some(i - 1);
@@ -173,12 +207,6 @@ impl App {
                 }
                 KeyCode::Char('a') => {
                     self.update_selected_note_status(gn_core::NoteStatus::Approved);
-                }
-                KeyCode::Char('j') => {
-                    self.note_scroll = self.note_scroll.saturating_add(1);
-                }
-                KeyCode::Char('k') => {
-                    self.note_scroll = self.note_scroll.saturating_sub(1);
                 }
                 KeyCode::Char('r') => {
                     self.mode = AppMode::InputBar;
