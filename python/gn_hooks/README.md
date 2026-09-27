@@ -71,7 +71,6 @@ git-notes-hooks uninstall
 - **Asynchronous Decoupled Task Queue**: Full non-blocking async execution queue in IDE extensions.
 - **Automated CLI Binary Installer**: In-editor platform binary installer for Linux, macOS, and Windows.
 - **Interactive Onboarding Walkthrough**: Step-by-step developer guide.
-- **Expanded Multi-Node Burden Suite**: 13-stage end-to-end multi-developer simulation test.
 
 ### [0.1.10] - 2026-09-27
 - **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**: Single-command merge readiness check with `--min-approvals` and `--no-unresolved`.

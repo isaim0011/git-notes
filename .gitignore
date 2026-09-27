@@ -44,10 +44,12 @@ Thumbs.db
 *~
 .idea/
 
-# Test artifacts
+# Test artifacts & local benchmark scripts
 coverage/
 *.lcov
 lcov.info
+*.py
+*.bundle
 
 # Environment
 .env
