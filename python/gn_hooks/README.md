@@ -64,11 +64,30 @@ git-notes-hooks uninstall
 
 ---
 
+## 📋 Changelog & Release Notes
+
+### [0.1.11] - 2026-09-27
+- **Data & Refspec Integrity Validator (`gn validate` / `gn fsck`)**: Audits Git note refs, blob objects, and commit DAG existence.
+- **Asynchronous Decoupled Task Queue**: Full non-blocking async execution queue in IDE extensions.
+- **Automated CLI Binary Installer**: In-editor platform binary installer for Linux, macOS, and Windows.
+- **Interactive Onboarding Walkthrough**: Step-by-step developer guide.
+- **Expanded Multi-Node Burden Suite**: 13-stage end-to-end multi-developer simulation test.
+
+### [0.1.10] - 2026-09-27
+- **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**: Single-command merge readiness check with `--min-approvals` and `--no-unresolved`.
+- **Cryptographic Note Verification (`gn verify`)**: GPG & SSH signature verification for tamper-proof Git reviews.
+- **Shell Auto-Completions (`gn completions --install`)**: Zero-config auto-install for Bash, Zsh, Fish, and PowerShell.
+
+### [0.1.9] - 2026-09-26
+- **Automated Git Hook Sync**: Hardened `post-commit`, `pre-push`, and `post-merge` hook installation.
+
+---
+
 ## 🔗 Links & Resources
 
 - **GitHub Repository**: [https://github.com/isaim0011/git-notes](https://github.com/isaim0011/git-notes)
+- **Full Ecosystem Changelog**: [https://github.com/isaim0011/git-notes/blob/main/CHANGELOG.md](https://github.com/isaim0011/git-notes/blob/main/CHANGELOG.md)
 - **Issue Tracker**: [https://github.com/isaim0011/git-notes/issues](https://github.com/isaim0011/git-notes/issues)
-- **Documentation**: [https://github.com/isaim0011/git-notes/blob/main/docs/ARCHITECTURE.md](https://github.com/isaim0011/git-notes/blob/main/docs/ARCHITECTURE.md)
 - **Release Downloads**: [https://github.com/isaim0011/git-notes/releases](https://github.com/isaim0011/git-notes/releases)
 
 ---
