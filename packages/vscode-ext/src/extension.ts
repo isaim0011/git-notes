@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { GutterProvider } from './gutterProvider';
 import { InlayHintsProvider } from './inlayProvider';
 import { registerCommands } from './commands';
+import { runner } from './runner';
 
 let autoSyncInterval: NodeJS.Timeout | undefined;
 
@@ -28,12 +29,14 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Refresh on save if configured
+    // Refresh on save if configured with debouncing
     context.subscriptions.push(
         vscode.workspace.onDidSaveTextDocument(() => {
             const config = vscode.workspace.getConfiguration('git-notes');
             if (config.get<boolean>('autoSync', false)) {
-                vscode.commands.executeCommand('git-notes.sync');
+                runner.debounce('autosync_save', () => {
+                    vscode.commands.executeCommand('git-notes.sync');
+                }, 500);
             }
         })
     );

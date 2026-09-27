@@ -2,7 +2,7 @@
   "name": "vscode-git-notes",
   "displayName": "git-notes",
   "description": "Decentralized code comments, review discussions, and GitHub notes inline inside VS Code, Cursor, and Windsurf IDEs",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "publisher": "isaim0011",
   "icon": "icon.png",
   "author": { "name": "Bimo", "email": "i.s41m0011@gmail.com" },
@@ -77,6 +77,59 @@
         "git-notes.autoSync": { "type": "boolean", "default": false, "description": "Auto-sync notes on save" },
         "git-notes.defaultNamespace": { "type": "string", "default": "comments", "enum": ["comments", "review", "todos"] }
       }
-    }
+    },
+    "walkthroughs": [
+      {
+        "id": "git-notes.welcome",
+        "title": "Getting Started with git-notes",
+        "description": "Learn how to use decentralized, git-native code annotations and review workflows.",
+        "steps": [
+          {
+            "id": "git-notes.init",
+            "title": "Initialize Repository",
+            "description": "Configure your git refspec and sync hooks for seamless decentralized note sharing.",
+            "media": {
+              "markdown": "walkthrough/init.md"
+            },
+            "completionEvents": [
+              "onCommand:git-notes.sync"
+            ]
+          },
+          {
+            "id": "git-notes.addNote",
+            "title": "Add Inline Code Notes",
+            "description": "Anchor discussions, todos, and reviews to code lines using Alt+N.",
+            "media": {
+              "markdown": "walkthrough/notes.md"
+            },
+            "completionEvents": [
+              "onCommand:git-notes.add"
+            ]
+          },
+          {
+            "id": "git-notes.threads",
+            "title": "Interactive Discussion Threads",
+            "description": "View rich threaded discussions and resolve comments using Alt+Shift+N.",
+            "media": {
+              "markdown": "walkthrough/threads.md"
+            },
+            "completionEvents": [
+              "onCommand:git-notes.showPanel"
+            ]
+          },
+          {
+            "id": "git-notes.sync",
+            "title": "Sync, Rebase Heal & CI Gate",
+            "description": "Synchronize with git remotes, heal after rebases, and gate merges in CI.",
+            "media": {
+              "markdown": "walkthrough/sync.md"
+            },
+            "completionEvents": [
+              "onCommand:git-notes.sync"
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

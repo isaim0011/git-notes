@@ -90,6 +90,10 @@ pub enum Commands {
     /// Verify cryptographic signatures of notes [alias: sig]
     #[command(alias = "sig")]
     Verify(commands::verify::VerifyArgs),
+
+    /// Validate git-notes refs and JSON schema integrity [aliases: fsck, lint]
+    #[command(alias = "fsck", alias = "lint")]
+    Validate(commands::validate::ValidateArgs),
 }
 
 pub fn run_cli() -> anyhow::Result<()> {
@@ -177,6 +181,10 @@ pub fn run_cli() -> anyhow::Result<()> {
             profile.record_interaction("verify", None, args.namespace.as_deref());
             commands::verify::run(args)
         }
+        Commands::Validate(args) => {
+            profile.record_interaction("validate", None, args.namespace.as_deref());
+            commands::validate::run(args)
+        }
         Commands::Completions(args) => commands::completions::run(args),
     };
 
@@ -184,6 +192,7 @@ pub fn run_cli() -> anyhow::Result<()> {
         Commands::List(a) => a.json,
         Commands::Check(a) => a.json,
         Commands::Show(a) => a.json,
+        Commands::Validate(a) => a.json,
         _ => false,
     };
 

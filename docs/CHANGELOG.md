@@ -7,7 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.1.8] - 2026-09-24
+## [0.1.11] - 2026-09-27
+
+### Added
+- **Data & Refspec Integrity Validator (`gn validate` / `gn fsck` / `gn lint`)**: Full tree and content-addressed blob validation across all `refs/notes/*`. Checks commit DAG anchors, detects orphan notes or corruption, and supports `--strict` CI gating and `--json` structured diagnostics.
+- **Asynchronous Decoupled Task Queue in VS Code Extension**: Queued and debounced command execution (`AsyncRunner`) preventing concurrency races, UI thread freezing, and redundant subprocess execution during rapid saves or git operations.
+- **Automated Binary Installer & Downloader**: In-extension binary resolution that checks PATH, local caches, and securely downloads the correct platform binary (`.exe`, Linux x86_64, macOS arm64/x86_64) on demand.
+- **Rich Onboarding Walkthrough**: Interactive VS Code walkthrough (`contributes.walkthroughs`) guiding new developers through repo initialization, inline gutter notes (`Alt+N`), webview threads (`Alt+Shift+N`), and remote sync/healing.
+- **13-Stage Burden & Stress Test Suite**: Expanded `burden_test.py` with Test 13 ensuring 100% data integrity validation.
+
+---
+
+## [0.1.10] - 2026-09-27
+
+### Added
+- **CI Quality Gating & Merge-Readiness (`gn check` / `gn gate`)**: Single-command automated merge validation with `--min-approvals <N>` and `--no-unresolved`.
+- **Cryptographic Note Verification (`gn a --sign` / `gn verify`)**: GPG & SSH signature support for authentic, tamper-proof reviews in Git.
+- **Shell Auto-Completions with 1-Click Install (`gn completions --install`)**: Zero-config auto-detection and installation for Bash, Zsh, Fish, PowerShell, and Elvish.
+- **12-Stage Real-World Multi-Node Burden Test Suite (`burden_test.py`)**: End-to-end multi-developer simulation enforcing zero regressions across all core features.
+
+### Fixed
+- **Clean Machine JSON Output**: Suppressed plain-text interactive workflow suggestions when `--json` flags are passed (`gn list --json`, `gn check --json`), ensuring 100% compliant JSON parsing for CI/CD runners and external tooling.
+
+---
+
+## [0.1.9] - 2026-09-26
 
 ### Added
 - **`gn rebase-heal` (Semantic Commit Re-anchoring)**: Automatically detects when branch commits have been rewritten or rebased (`git rebase`, `commit --amend`, `cherry-pick`) and re-anchors orphaned notes to new commit SHAs using stable patch-IDs and commit subject heuristics. Supports `--dry-run`.

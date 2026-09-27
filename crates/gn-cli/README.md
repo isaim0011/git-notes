@@ -62,6 +62,7 @@ Save keystrokes with fast, ergonomic quickies:
 - `gn heal` — Auto-heal & re-anchor notes after git rebase / amend
 - `gn check` / `gn gate` — CI quality gating and merge-readiness check
 - `gn verify` / `gn sig` — Verify cryptographic signatures of notes
+- `gn validate` / `gn fsck` — Audit git note refs, blob objects, and schema integrity
 - `gn sum` — AI summary of open discussion threads (Gemini)
 - `gn i` — 1-second repo setup (tracking refspec + hooks)
 - `gn p2p` — Spin up local Wi-Fi P2P sync server

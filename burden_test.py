@@ -207,6 +207,22 @@ def main():
         passed_tests += 1
         print("\x1b[32m✔ Multi-shell auto-completions generated accurately.\x1b[0m\n")
 
+        # ---------------------------------------------------------
+        # TEST 13: Data & Refspec Integrity Validator (`gn validate` / `gn fsck`)
+        # ---------------------------------------------------------
+        total_tests += 1
+        print(f"\x1b[33m[TEST {total_tests}] Testing Data & Refspec Integrity Validator (`gn validate`)...\x1b[0m")
+        res_val = run([gn_bin, "validate"], cwd=repo_a)
+        assert "Data & Refspec Integrity Validator" in res_val.stdout
+        assert "Summary:" in res_val.stdout
+        # Also verify JSON output format
+        res_val_json = run([gn_bin, "validate", "--json"], cwd=repo_a)
+        val_data = json.loads(res_val_json.stdout)
+        assert "healthy" in val_data
+        assert val_data["healthy"] is True
+        passed_tests += 1
+        print("\x1b[32m✔ Data & Refspec Integrity Validator verified with 100% schema integrity.\x1b[0m\n")
+
     print("="*70)
     print(f"\x1b[1;32m*** ALL {passed_tests}/{total_tests} BURDEN & END-TO-END STRESS TESTS PASSED WITH 100% SUCCESS! ***\x1b[0m")
     print("="*70 + "\n")

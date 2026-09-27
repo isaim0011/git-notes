@@ -46,6 +46,7 @@ impl Default for ShortcutConfig {
         cli_aliases.insert("gn i".into(), "1-second setup: configure fetch refspec & auto-sync hooks [alias: init]".into());
         cli_aliases.insert("gn check / gn gate".into(), "CI quality gating and merge-readiness check [alias: gate]".into());
         cli_aliases.insert("gn verify / gn sig".into(), "Verify cryptographic signatures of notes [alias: sig]".into());
+        cli_aliases.insert("gn validate / gn fsck".into(), "Validate data refspecs and JSON schema integrity [aliases: fsck, lint]".into());
 
         let mut tui_keybindings = BTreeMap::new();
         tui_keybindings.insert("↑ / ↓ or k / j".into(), "Navigate files and notes list with vertical scroll".into());

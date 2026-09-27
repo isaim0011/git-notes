@@ -1,19 +1,24 @@
 import * as vscode from 'vscode';
-import { exec } from 'child_process';
 import { NotePanel } from './notePanel';
 import { GutterProvider } from './gutterProvider';
 import { Note } from './types';
 import * as path from 'path';
+import { runner } from './runner';
+import { ensureGitNotesBinary } from './installer';
 
 export function registerCommands(context: vscode.ExtensionContext, gutterProvider: GutterProvider) {
-    const runGitNotesCommand = (args: string[], workspacePath: string): Promise<string> => {
-        const binaryPath = vscode.workspace.getConfiguration('git-notes').get<string>('binaryPath', 'git-notes');
-        return new Promise((resolve, reject) => {
-            exec(`"${binaryPath}" ${args.join(' ')}`, { cwd: workspacePath }, (error, stdout, stderr) => {
-                if (error) reject(new Error(stderr || stdout || error.message));
-                else resolve(stdout.trim());
-            });
-        });
+    let resolvedBinaryPath: string | null = null;
+
+    const getBinary = async (): Promise<string> => {
+        if (!resolvedBinaryPath) {
+            resolvedBinaryPath = await ensureGitNotesBinary(context);
+        }
+        return resolvedBinaryPath;
+    };
+
+    const runGitNotesCommand = async (args: string[], workspacePath: string): Promise<string> => {
+        const binary = await getBinary();
+        return runner.runCommand(`"${binary}" ${args.join(' ')}`, workspacePath);
     };
 
     const getActiveWorkspacePath = () => {

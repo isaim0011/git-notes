@@ -20,4 +20,5 @@ pub mod show;
 pub mod signing;
 pub mod summarize;
 pub mod sync;
+pub mod validate;
 pub mod verify;

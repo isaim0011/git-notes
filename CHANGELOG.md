@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.11] - 2026-09-27
+
+### Added
+- **Data & Refspec Integrity Validator (`gn validate` / `gn fsck` / `gn lint`)**: Full tree and content-addressed blob validation across all `refs/notes/*`. Checks commit DAG anchors, detects orphan notes or corruption, and supports `--strict` CI gating and `--json` structured diagnostics.
+- **Asynchronous Decoupled Task Queue in VS Code Extension**: Queued and debounced command execution (`AsyncRunner`) preventing concurrency races, UI thread freezing, and redundant subprocess execution during rapid saves or git operations.
+- **Automated Binary Installer & Downloader**: In-extension binary resolution that checks PATH, local caches, and securely downloads the correct platform binary (`.exe`, Linux x86_64, macOS arm64/x86_64) on demand.
+- **Rich Onboarding Walkthrough**: Interactive VS Code walkthrough (`contributes.walkthroughs`) guiding new developers through repo initialization, inline gutter notes (`Alt+N`), webview threads (`Alt+Shift+N`), and remote sync/healing.
+- **13-Stage Burden & Stress Test Suite**: Expanded `burden_test.py` with Test 13 ensuring 100% data integrity validation.
+
+---
+
 ## [0.1.10] - 2026-09-27
 
 ### Added

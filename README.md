@@ -125,9 +125,12 @@ gn push && gn pull
 gn sum --namespace review
 
 # 14. CI quality gating & merge-readiness check
-gn check --min-approvals 1 --no-unresolved  # Or alias: gn verify / gn gate
+gn check --min-approvals 1 --no-unresolved  # Or alias: gn gate
 
-# 15. Shell completions (auto-install to profile/directory)
+# 15. Data & refspec integrity validator (fsck / audit)
+gn validate                                # Or aliases: gn fsck, gn lint
+
+# 16. Shell completions (auto-install to profile/directory)
 gn completions --install
 ```
 
